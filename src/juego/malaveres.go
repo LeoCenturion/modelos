@@ -14,7 +14,7 @@ type Contexto struct {
   cartasJugadas [TURNOS]Carta
   cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
   monedas [TURNOS]int
-  recursosDisponibles [TURNOS][CANTIDAD_RECURSOS]int
+  recursosDisponibles [CANTIDAD_RECURSOS]int
   escudos [TURNOS]int
   puntosTotales int
   comodinJugado bool
@@ -25,6 +25,7 @@ func (c *Contexto) CargarCartas(archivo string) {
   for i, _ := range c.cartasJugadas {
     c.cartasJugadas[i].Id = NULL
   }
+
   for i, _ := range c.cartasDisponibles {
     c.cartasDisponibles[i].Id = NULL
   }
@@ -85,7 +86,7 @@ func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada
   pesoMaximo := float32(0) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
   eraActual := c.eraEnTurno(t)
   for _, carta := range c.cartasRestantes {
-    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles[t], cartasJugadas, eraActual,c.comodinJugado) {
+    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual,c.comodinJugado) {
       pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta)
       if pesoCarta > pesoMaximo {
         pesoMaximo = pesoCarta
@@ -124,7 +125,7 @@ func (c *Contexto) ComenzarSimulacion() {
     }
 
     for r, _ := range recursos {
-      c.recursosDisponibles[t][r] += cartaJugada.Produce[r]
+      c.recursosDisponibles[r] += cartaJugada.Produce[r]
     }
   }
   c.calcularPuntos()
