@@ -120,7 +120,7 @@ func (c *Contexto) calcularPuntos() {
   cantidadEscritura:=0
   cantidadRueda:=0
   for i, cartaJugada := range c.cartasJugadas{
-    switch cartaJugada.tipo{
+    switch cartaJugada.Tipo{
     case CIVIL:
       //puntos civiles
       puntosCiviles+=cartaJugada.puntos
@@ -145,7 +145,7 @@ func (c *Contexto) calcularPuntos() {
       }
     }
   }
-  
+
   //puntos militares
   puntosMilitares := 0
   puntosContrincante:=[3]int{CONTRINCANTE1, CONTRINCANTE2, CONTRINCANTE3}
@@ -166,9 +166,44 @@ func (c *Contexto) calcularPuntos() {
     }
   }
   puntosCientificos := puntosCientificosIguales*PUNTOS_CIENTIFICOS_IGUALES + puntosCientificosDiferentes
-  puntosMonedas := c.recursosDisponibles[17][MONEDA]/3 - c.recursosDisponibles[17][MONEDA]%3
+  puntosMonedas := c.recursosDisponibles[MONEDA]/3 - c.recursosDisponibles[MONEDA]%3
 
-  c.puntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos
+  puntosComerciales := c.CalcularPuntosComerciales()
+
+  c.puntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
+
+}
+
+
+func (c *Contexto) CalcularPuntosComerciales() (puntos int){
+  //TODO: NO ES OPTIMO PODRIA METERSE EN OTRO LADO; PERO BUE
+  seJugoHaven := false
+  seJugoChamber := false
+  seJugoLighthouse := false
+  for _, carta := range c.cartasJugadas {
+    switch carta.Id {
+      case HAVEN:
+        seJugoHaven = true
+      case CHAMBER:
+        seJugoChamber = true
+      case LIGHTHOUSE:
+        seJugoLighthouse = true
+    }
+  }
+  puntosPorMateriasPrimasAlFinal := 0
+  puntosPorManufacturasAlFinal := 0
+  puntosPorComercialesAlFinal := 0
+  for _, carta := range c.cartasJugadas {
+    switch carta.Tipo {
+      case MATERIA_PRIMA:
+        if seJugoHaven { puntosPorMateriasPrimasAlFinal++ }
+      case MANUFACTURA:
+        if seJugoChamber { puntosPorManufacturasAlFinal += 2 }
+      case COMERCIAL:
+        if seJugoLighthouse { puntosPorComercialesAlFinal += 2 }
+    }
+  }
+  return puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 }
 
 //Realiza la heurística de construcción

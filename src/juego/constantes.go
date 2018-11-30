@@ -43,6 +43,9 @@ const CUALQUIERA = -1
 const PRECIO_INICIAL_RECURSO = 2
 const MARKETPLACE = 75
 const WEST_TRADING_POST = 74
+const HAVEN = 88
+const CHAMBER = 89
+const LIGHTHOUSE = 90
 
 //turno de batallas
 const BATALLA1 = 6
