@@ -3,7 +3,7 @@ package main
 import (
   "juego"
 )
-func main() {
+func main(){
   c := juego.Contexto{}
   c.CargarCartas("test.csv")
   c.MostrarCartasDisponibles()
