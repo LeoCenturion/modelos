@@ -63,6 +63,9 @@ const CONTRINCANTE3 = 5
 //puntos científicos por cada grupo de 3 tipos distintos
 const PUNTOS_CIENTIFICOS_DIFERENTES = 7
 
+const PUNTOS_POR_MONEDAS = 3
+const MONEDAS_POR_NO_HACER_NADA = 3
+
 
 func recursoEsMateriaPrima (recurso int) (esMateriaPrima bool) {
   esMateriaPrima = recurso < CERAMICA

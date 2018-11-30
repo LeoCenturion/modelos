@@ -106,15 +106,15 @@ func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
   nombre = "ORNITORRINCO_MAXIMO"
   switch unaCarta.Tipo {
     case RUEDA, ESCRITURA, GEOMETRIA:
-      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case MILITAR:
-      peso = float32(unaCarta.puntos)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+      peso = float32(unaCarta.puntos)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case CIVIL:
-      peso = float32(unaCarta.puntos)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+      peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case COMERCIAL:
-      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     default:
-      peso = 1+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+      peso = MONEDAS_POR_NO_HACER_NADA/PUNTOS_POR_MONEDAS
   }
   return
 }

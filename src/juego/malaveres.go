@@ -32,7 +32,7 @@ func (c *Contexto) CargarCartas(archivo string) {
 		c.precioRecursos[i] = PRECIO_INICIAL_RECURSO
 	}
 
-	c.recursosDisponibles[MONEDA] = 3
+	c.recursosDisponibles[MONEDA] = MONEDAS_POR_NO_HACER_NADA
 	data, _ := ioutil.ReadFile(archivo)
 	r := csv.NewReader(strings.NewReader(string(data)))
 
@@ -69,7 +69,7 @@ func (c *Contexto) CargarCartas(archivo string) {
 	cartaNoHacerNada := Carta{}
 	produce :=  [CANTIDAD_RECURSOS]int{}
 	requiere :=  [CANTIDAD_RECURSOS]int{}
-	produce[MONEDA] = 3
+	produce[MONEDA] = MONEDAS_POR_NO_HACER_NADA
 	cartaNoHacerNada.Init(NO_HACER_NADA,NO_HACER_NADA, CUALQUIERA, 0, 0,0, "No hacer nada", produce, requiere)
 	c.cartasDisponibles[NO_HACER_NADA] = cartaNoHacerNada
 	c.cartasRestantes = c.cartasDisponibles //TODO: esto tal vez copia la referencia del array, por ahora no nos jode igual por que no se si vamos a usar cartas disponibles y restantes
