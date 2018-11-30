@@ -210,33 +210,37 @@ func (c *Contexto) CalcularPuntosComerciales() (puntos int){
 
 }
 
+func (c *Contexto) jugarCarta(cartaJugada Carta) {
+  if cartaJugada.Id != NO_HACER_NADA {
+    c.cartasRestantes[cartaJugada.Id].Id = NULL
+  }
+  if cartaJugada.Id == ID_CARTA_COMODIN {
+    c.comodinJugado = true
+  }
+  if cartaJugada.Id == MARKETPLACE {
+    c.precioRecursos[CERAMICA] = 1
+    c.precioRecursos[TELA] = 1
+    c.precioRecursos[PAPIRO] = 1
+  }
+  if cartaJugada.Id == WEST_TRADING_POST {
+    c.precioRecursos[LADRILLO] = 1
+    c.precioRecursos[CEMENTO] = 1
+    c.precioRecursos[ORO] = 1
+    c.precioRecursos[MADERA] = 1
+  }
+  c.recursosDisponibles[MONEDA] -= cartaJugada.monedasNecesarias
+  recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
+  for r, _ := range recursos {
+    c.recursosDisponibles[r] += cartaJugada.Produce[r]
+  }
+}
+
 //Realiza la heurística de construcción
 func (c *Contexto) ComenzarSimulacion() {
-  recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
   for t:= 0; t < TURNOS;t++ {
     cartaJugada := c.SimularTurno(t, c.cartasJugadas)
     c.cartasJugadas[t] = cartaJugada
-    if cartaJugada.Id != NO_HACER_NADA {
-      c.cartasRestantes[cartaJugada.Id].Id = NULL
-    }
-    if cartaJugada.Id == ID_CARTA_COMODIN {
-      c.comodinJugado = true
-    }
-    if cartaJugada.Id == MARKETPLACE {
-      c.precioRecursos[CERAMICA] = 1
-      c.precioRecursos[TELA] = 1
-      c.precioRecursos[PAPIRO] = 1
-    }
-    if cartaJugada.Id == WEST_TRADING_POST {
-      c.precioRecursos[LADRILLO] = 1
-      c.precioRecursos[CEMENTO] = 1
-      c.precioRecursos[ORO] = 1
-      c.precioRecursos[MADERA] = 1
-    }
-
-    for r, _ := range recursos {
-      c.recursosDisponibles[r] += cartaJugada.Produce[r]
-    }
+    c.jugarCarta(cartaJugada)
   }
   c.calcularPuntos()
 
