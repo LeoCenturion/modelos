@@ -33,6 +33,7 @@ func (c *Contexto) CargarCartas(archivo string) {
     c.precioRecursos[i] = PRECIO_INICIAL_RECURSO
   }
 
+  c.recursosDisponibles[MONEDA] = 3
   data, _ := ioutil.ReadFile(archivo)
   r := csv.NewReader(strings.NewReader(string(data)))
 	records, err := r.ReadAll()
@@ -76,7 +77,7 @@ func (c *Contexto) CargarCartas(archivo string) {
 //Determina la era a la que pertence el turno t
 func (c Contexto) eraEnTurno(t int) (era int){
   era = 1
-  if t >=7 && t <= 12 {
+  if t >= 7 && t <= 12 {
     era = 2
   } else if t >= 13 {
     era = 3
