@@ -36,7 +36,7 @@ const NO_HACER_NADA = 55
 //misc
 const NINGUNA = 0
 const TURNOS=18
-const INDICE_MAXIMO_CARTA = 90
+const INDICE_MAXIMO_CARTA = 91
 const NULL = -1
 const ID_CARTA_COMODIN = 61
 const CUALQUIERA = -1

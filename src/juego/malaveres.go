@@ -54,6 +54,7 @@ func (c *Contexto) CargarCartas(archivo string) {
 			produce[recurso], _ = strconv.Atoi(row[recurso])
 			requiere[recurso], _ = strconv.Atoi(row[OFFSET_REQUIERE + recurso])
 		}
+
 		id, _ := strconv.Atoi(row[ID])
 		tipo, _ := strconv.Atoi(row[TIPO])
 		era, _ := strconv.Atoi(row[ERA])
