@@ -46,7 +46,10 @@ const WEST_TRADING_POST = 74
 const HAVEN = 88
 const CHAMBER = 89
 const LIGHTHOUSE = 90
-
+const VINEYARD = 81
+const BAZAR = 82
+const CARAVANSERY = 83
+const FORUM = 80
 //turno de batallas
 const BATALLA1 = 6
 const BATALLA2 = 12
@@ -59,3 +62,9 @@ const CONTRINCANTE3 = 5
 
 //puntos científicos por cada grupo de 3 tipos distintos
 const PUNTOS_CIENTIFICOS_IGUALES = 7
+
+
+func recursoEsMateriaPrima (recurso int) (esMateriaPrima bool) {
+  esMateriaPrima = recurso < CERAMICA
+  return
+}
