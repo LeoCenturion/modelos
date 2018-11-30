@@ -11,13 +11,14 @@ import (
 
 
 type Contexto struct {
-	cartasJugadas [TURNOS]Carta
-	cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
-	monedas [TURNOS]int
-	recursosDisponibles [CANTIDAD_RECURSOS]int
-	escudos [TURNOS]int
-	puntosTotales int
-	comodinJugado bool
+
+  cartasJugadas [TURNOS]Carta
+  cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
+  recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int
+  escudos [TURNOS]int
+  puntosTotales int
+  comodinJugado bool
+
 }
 
 //Carga de un csv todas las cartas disponibles
@@ -30,8 +31,14 @@ func (c *Contexto) CargarCartas(archivo string) {
 		c.cartasDisponibles[i].Id = NULL
 	}
 
-	data, _ := ioutil.ReadFile(archivo)
-	r := csv.NewReader(strings.NewReader(string(data)))
+  for i, _ := range c.precioRecursos {
+    c.precioRecursos[i] = PRECIO_INICIAL_RECURSO
+  }
+
+  c.recursosDisponibles[MONEDA] = 3
+  data, _ := ioutil.ReadFile(archivo)
+  r := csv.NewReader(strings.NewReader(string(data)))
+
 	records, err := r.ReadAll()
 
 	if err != nil {
@@ -72,29 +79,32 @@ func (c *Contexto) CargarCartas(archivo string) {
 
 //Determina la era a la que pertence el turno t
 func (c Contexto) eraEnTurno(t int) (era int){
-	era = 1
-	if t >=7 && t <= 12 {
-		era = 2
-	} else if t >= 13 {
-		era = 3
-	}
-	return
+  era = 1
+  if t >= 7 && t <= 12 {
+    era = 2
+  } else if t >= 13 {
+    era = 3
+  }
+  return
+
 }
 
 //Obtiene la carta que se debería jugar en el turno t, dado el estado de cartasJugadas.
 func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada Carta){
-	pesoMaximo := float32(0) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
-	eraActual := c.eraEnTurno(t)
-	for _, carta := range c.cartasRestantes {
-		if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual,c.comodinJugado) {
-			pesoCarta := c.calcularPeso_promedioDeProduce(cartasJugadas, c.cartasRestantes, carta)
-			if pesoCarta > pesoMaximo {
-				pesoMaximo = pesoCarta
-				cartaJugada = carta
-			}
-		}
-	}
-	return
+
+  pesoMaximo := float32(0) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
+  eraActual := c.eraEnTurno(t)
+  for _, carta := range c.cartasRestantes {
+    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinJugado) {
+      pesoCarta := c.calcularPeso_promedioDeProduce(cartasJugadas, c.cartasRestantes, carta)
+      if pesoCarta > pesoMaximo {
+        pesoMaximo = pesoCarta
+        cartaJugada = carta
+      }
+    }
+  }
+  return
+
 }
 /*
 //Calcula el ponderable para un turno
@@ -124,30 +134,134 @@ func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [IN
 */
 //Calcula los puntos segun todas las cartasJugadas
 func (c *Contexto) calcularPuntos() {
-	c.puntosTotales = 0
-	for _, carta := range c.cartasJugadas {
-		c.puntosTotales += carta.Id
-	}
+  c.puntosTotales = 0
+  /*for _, carta := range c.cartasJugadas {
+    c.puntosTotales += carta.Id
+  }*/
+
+  escudos:=[3]int{0,0,0}
+  puntosCiviles:=0
+  cantidadGeometria:=0
+  cantidadEscritura:=0
+  cantidadRueda:=0
+  for i, cartaJugada := range c.cartasJugadas{
+    switch cartaJugada.Tipo{
+    case CIVIL:
+      //puntos civiles
+      puntosCiviles+=cartaJugada.puntos
+    case GEOMETRIA:
+      //cantidad de cartas científicas de cada tipo
+      cantidadGeometria+=1
+    case RUEDA:
+      cantidadRueda+=1
+  case ESCRITURA:
+    cantidadEscritura+=1
+  case MILITAR:
+    //cantidad de escudos que tiene en las batallas
+      if i<BATALLA1{
+        escudos[0]+=cartaJugada.puntos
+        escudos[1]+=cartaJugada.puntos
+        escudos[2]+=cartaJugada.puntos
+      } else if i<BATALLA2{
+        escudos[1]+=cartaJugada.puntos
+        escudos[2]+=cartaJugada.puntos
+      } else{
+        escudos[2]+=cartaJugada.puntos
+      }
+    }
+  }
+
+  //puntos militares
+  puntosMilitares := 0
+  puntosContrincante:=[3]int{CONTRINCANTE1, CONTRINCANTE2, CONTRINCANTE3}
+  for i, _ := range puntosContrincante{
+    if escudos[i]<puntosContrincante[i]{
+      puntosMilitares-=1
+  } else if escudos[i]>puntosContrincante[i]{
+    puntosMilitares+=puntosContrincante[i]
+  }
+  }
+
+  puntosCientificosIguales := cantidadGeometria*cantidadGeometria + cantidadRueda*cantidadRueda + cantidadEscritura*cantidadEscritura
+  puntosCientificosDiferentes:=cantidadEscritura
+  cantidadesCientificas:=[3]int{cantidadEscritura,cantidadRueda,cantidadGeometria}
+  for _,cantidad := range cantidadesCientificas{
+    if cantidad<puntosCientificosDiferentes{
+      puntosCientificosDiferentes = cantidad
+    }
+  }
+  puntosCientificos := puntosCientificosIguales*PUNTOS_CIENTIFICOS_IGUALES + puntosCientificosDiferentes
+  puntosMonedas := c.recursosDisponibles[MONEDA]/3 - c.recursosDisponibles[MONEDA]%3
+
+  puntosComerciales := c.CalcularPuntosComerciales()
+
+  c.puntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
+
+}
+
+
+func (c *Contexto) CalcularPuntosComerciales() (puntos int){
+  //TODO: NO ES OPTIMO PODRIA METERSE EN OTRO LADO; PERO BUE
+  seJugoHaven := false
+  seJugoChamber := false
+  seJugoLighthouse := false
+  for _, carta := range c.cartasJugadas {
+    switch carta.Id {
+      case HAVEN:
+        seJugoHaven = true
+      case CHAMBER:
+        seJugoChamber = true
+      case LIGHTHOUSE:
+        seJugoLighthouse = true
+    }
+  }
+  puntosPorMateriasPrimasAlFinal := 0
+  puntosPorManufacturasAlFinal := 0
+  puntosPorComercialesAlFinal := 0
+  for _, carta := range c.cartasJugadas {
+    switch carta.Tipo {
+      case MATERIA_PRIMA:
+        if seJugoHaven { puntosPorMateriasPrimasAlFinal++ }
+      case MANUFACTURA:
+        if seJugoChamber { puntosPorManufacturasAlFinal += 2 }
+      case COMERCIAL:
+        if seJugoLighthouse { puntosPorComercialesAlFinal += 2 }
+    }
+  }
+  return puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
+
 }
 
 //Realiza la heurística de construcción
 func (c *Contexto) ComenzarSimulacion() {
-	recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
-	for t:= 0; t < TURNOS;t++ {
-		cartaJugada := c.SimularTurno(t, c.cartasJugadas)
-		c.cartasJugadas[t] = cartaJugada
-		if cartaJugada.Id != NO_HACER_NADA {
-			c.cartasRestantes[cartaJugada.Id].Id = NULL
-		}
-		if cartaJugada.Id == ID_CARTA_COMODIN {
-			c.comodinJugado = true
-		}
+  recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
+  for t:= 0; t < TURNOS;t++ {
+    cartaJugada := c.SimularTurno(t, c.cartasJugadas)
+    c.cartasJugadas[t] = cartaJugada
+    if cartaJugada.Id != NO_HACER_NADA {
+      c.cartasRestantes[cartaJugada.Id].Id = NULL
+    }
+    if cartaJugada.Id == ID_CARTA_COMODIN {
+      c.comodinJugado = true
+    }
+    if cartaJugada.Id == MARKETPLACE {
+      c.precioRecursos[CERAMICA] = 1
+      c.precioRecursos[TELA] = 1
+      c.precioRecursos[PAPIRO] = 1
+    }
+    if cartaJugada.Id == WEST_TRADING_POST {
+      c.precioRecursos[LADRILLO] = 1
+      c.precioRecursos[CEMENTO] = 1
+      c.precioRecursos[ORO] = 1
+      c.precioRecursos[MADERA] = 1
+    }
 
-		for r, _ := range recursos {
-			c.recursosDisponibles[r] += cartaJugada.Produce[r]
-		}
-	}
-	c.calcularPuntos()
+    for r, _ := range recursos {
+      c.recursosDisponibles[r] += cartaJugada.Produce[r]
+    }
+  }
+  c.calcularPuntos()
+
 }
 
 //muestra los resultados de la simulación (las cartas que se deciden jugar)

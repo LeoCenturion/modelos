@@ -40,3 +40,22 @@ const INDICE_MAXIMO_CARTA = 90
 const NULL = -1
 const ID_CARTA_COMODIN = 61
 const CUALQUIERA = -1
+const PRECIO_INICIAL_RECURSO = 2
+const MARKETPLACE = 75
+const WEST_TRADING_POST = 74
+const HAVEN = 88
+const CHAMBER = 89
+const LIGHTHOUSE = 90
+
+//turno de batallas
+const BATALLA1 = 6
+const BATALLA2 = 12
+const BATALLA3 = 18
+
+//puntos militares del contrincante para las batallas
+const CONTRINCANTE1 = 1
+const CONTRINCANTE2 = 3
+const CONTRINCANTE3 = 5
+
+//puntos científicos por cada grupo de 3 tipos distintos
+const PUNTOS_CIENTIFICOS_IGUALES = 7
