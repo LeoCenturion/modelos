@@ -13,8 +13,7 @@ import (
 type Contexto struct {
   cartasJugadas [TURNOS]Carta
   cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
-  monedas [TURNOS]int
-  recursosDisponibles [CANTIDAD_RECURSOS]int
+  recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int
   escudos [TURNOS]int
   puntosTotales int
   comodinJugado bool
@@ -28,6 +27,10 @@ func (c *Contexto) CargarCartas(archivo string) {
 
   for i, _ := range c.cartasDisponibles {
     c.cartasDisponibles[i].Id = NULL
+  }
+
+  for i, _ := range c.precioRecursos {
+    c.precioRecursos[i] = PRECIO_INICIAL_RECURSO
   }
 
   data, _ := ioutil.ReadFile(archivo)
@@ -86,7 +89,7 @@ func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada
   pesoMaximo := float32(0) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
   eraActual := c.eraEnTurno(t)
   for _, carta := range c.cartasRestantes {
-    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual,c.comodinJugado) {
+    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinJugado) {
       pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta)
       if pesoCarta > pesoMaximo {
         pesoMaximo = pesoCarta
@@ -122,6 +125,17 @@ func (c *Contexto) ComenzarSimulacion() {
     }
     if cartaJugada.Id == ID_CARTA_COMODIN {
       c.comodinJugado = true
+    }
+    if cartaJugada.Id == MARKETPLACE {
+      c.precioRecursos[CERAMICA] = 1
+      c.precioRecursos[TELA] = 1
+      c.precioRecursos[PAPIRO] = 1
+    }
+    if cartaJugada.Id == WEST_TRADING_POST {
+      c.precioRecursos[LADRILLO] = 1
+      c.precioRecursos[CEMENTO] = 1
+      c.precioRecursos[ORO] = 1
+      c.precioRecursos[MADERA] = 1
     }
 
     for r, _ := range recursos {

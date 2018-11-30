@@ -26,7 +26,7 @@ func (c *Carta) Init(id, tipo, era, puntos, edificioGratis, cartaRequerida int, 
 }
 
 //Determina si la carta se puede jugar según los parámetros
-func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartasJugadas [TURNOS]Carta, eraActual int, comodinJugado bool) bool {
+func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartasJugadas [TURNOS]Carta, eraActual int, precioRecurso [CANTIDAD_RECURSOS]int, comodinJugado bool) bool {
   if !(c.era == eraActual || c.era == CUALQUIERA) { return false }
 
   cartaRequeridaJugada := c.cartaRequerida == NINGUNA
@@ -41,16 +41,26 @@ func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartas
    if !cartaRequeridaJugada { return false }
   }
 
-  yaSeUsoComodin := false
+  monedasNecesarias := 0
+  tieneRecursosSuficientes := false
+  maxPrecioRecurso := 0
   for i, r := range recursosDisponibles {
     dif := r - c.requiere[i]
-    if dif <= -2 { return false }
-    if dif == -1 && comodinJugado {
-      if !yaSeUsoComodin { yaSeUsoComodin = true } else { return false }
+    if dif < 0 {
+      monedasNecesarias += (-dif) * (precioRecurso[i])
+      if precioRecurso[i] > maxPrecioRecurso {
+        maxPrecioRecurso = precioRecurso[i]
+      }
     }
   }
 
-  return true
+  if monedasNecesarias <= recursosDisponibles[MONEDA] {
+    tieneRecursosSuficientes = true
+  } else if comodinJugado && monedasNecesarias - maxPrecioRecurso <= recursosDisponibles[MONEDA] {
+    tieneRecursosSuficientes = true
+  }
+
+  return tieneRecursosSuficientes
 }
 
 //Muestra la información de la carta
