@@ -102,9 +102,26 @@ func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
   return
 }
 
+func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
+  nombre = "ORNITORRINCO_MAXIMO"
+  switch unaCarta.Tipo {
+    case RUEDA, ESCRITURA, GEOMETRIA:
+      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+    case MILITAR:
+      peso = float32(unaCarta.puntos)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+    case CIVIL:
+      peso = float32(unaCarta.puntos)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+    case COMERCIAL:
+      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+    default:
+      peso = 1+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+  }
+  return
+}
+
 func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
 	nombre := ""
-	peso, nombre = c.SPAGHETTI(cartasJugadas, cartasRestantes, unaCarta)
+	peso, nombre = c.CHOCOLATE(cartasJugadas, cartasRestantes, unaCarta)
 	fmt.Println("Calculado con heurísitca:", nombre)
 	return
 }
