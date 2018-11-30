@@ -87,7 +87,7 @@ func (c Contexto) eraEnTurno(t int) (era int){
 
 //Obtiene la carta que se debería jugar en el turno t, dado el estado de cartasJugadas.
 func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada Carta){
-  pesoMaximo := float32(0) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
+  pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
   eraActual := c.eraEnTurno(t)
   for _, carta := range c.cartasRestantes {
     if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado) {
