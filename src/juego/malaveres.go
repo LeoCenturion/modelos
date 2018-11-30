@@ -6,18 +6,15 @@ import (
 	"io/ioutil"
 	"strings"
 	"log"
-
 )
 
-
 type Contexto struct {
-
-	cartasJugadas [TURNOS]Carta
-	cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
-	recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int
-	escudos [TURNOS]int
-	puntosTotales int
-	comodinJugado bool
+  cartasJugadas [TURNOS]Carta
+  cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
+  recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int
+  escudos [TURNOS]int
+  puntosTotales int
+  comodinMateriaPrimaJugado, comodinManufacturaJugado bool
 
 }
 
@@ -91,18 +88,19 @@ func (c Contexto) eraEnTurno(t int) (era int){
 
 //Obtiene la carta que se debería jugar en el turno t, dado el estado de cartasJugadas.
 func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada Carta){
-	pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
-	eraActual := c.eraEnTurno(t)
-	for _, carta := range c.cartasRestantes {
-		if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinJugado) {
-			pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta)
-			if pesoCarta > pesoMaximo {
-				pesoMaximo = pesoCarta
-				cartaJugada = carta
-			}
-		}
-	}
-	return
+  pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
+  eraActual := c.eraEnTurno(t)
+  for _, carta := range c.cartasRestantes {
+    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado) {
+      pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta)
+      if pesoCarta > pesoMaximo {
+        pesoMaximo = pesoCarta
+        cartaJugada = carta
+      }
+    }
+  }
+  return
+
 }
 
 //Calcula los puntos segun todas las cartasJugadas
@@ -213,12 +211,13 @@ func (c *Contexto) CalcularPuntosComerciales() (puntos int){
 	return puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
 }
-
+/*
 func (c *Contexto) jugarCarta(cartaJugada Carta) {
   if cartaJugada.Id != NO_HACER_NADA {
     c.cartasRestantes[cartaJugada.Id].Id = NULL
   }
-  if cartaJugada.Id == ID_CARTA_COMODIN {
+  
+if cartaJugada.Id == ID_CARTA_COMODIN {
     c.comodinJugado = true
   }
   if cartaJugada.Id == MARKETPLACE {
@@ -232,6 +231,58 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
     c.precioRecursos[ORO] = 1
     c.precioRecursos[MADERA] = 1
   }
+  c.recursosDisponibles[MONEDA] -= cartaJugada.monedasNecesarias
+  recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
+  for r, _ := range recursos {
+    c.recursosDisponibles[r] += cartaJugada.Produce[r]
+  }
+}
+*/
+func (c *Contexto) jugarCarta(cartaJugada Carta) {
+  if cartaJugada.Id != NO_HACER_NADA {
+    c.cartasRestantes[cartaJugada.Id].Id = NULL
+  }
+  if cartaJugada.Id == CARAVANSERY {
+    c.comodinMateriaPrimaJugado = true
+  }
+  if cartaJugada.Id == FORUM {
+    c.comodinManufacturaJugado = true
+  }
+  if cartaJugada.Id == MARKETPLACE {
+    c.precioRecursos[CERAMICA] = 1
+    c.precioRecursos[TELA] = 1
+    c.precioRecursos[PAPIRO] = 1
+  }
+  if cartaJugada.Id == WEST_TRADING_POST {
+    c.precioRecursos[LADRILLO] = 1
+    c.precioRecursos[CEMENTO] = 1
+    c.precioRecursos[ORO] = 1
+    c.precioRecursos[MADERA] = 1
+  }
+  //ESTO se puede optimizar para que solo se llama
+  materiasPrimasJugadas := 0
+  manufacturasJugadas := 0
+  comercialesJugadas := 0
+  for _, unaCarta := range c.cartasJugadas {
+    switch unaCarta.Tipo {
+      case MATERIA_PRIMA:
+        materiasPrimasJugadas++
+      case MANUFACTURA:
+        manufacturasJugadas++
+      case COMERCIAL:
+        comercialesJugadas++
+    }
+  }
+  if cartaJugada.Id == VINEYARD || cartaJugada.Id == HAVEN {
+    c.recursosDisponibles[MONEDA] = materiasPrimasJugadas
+  }
+  if cartaJugada.Id == BAZAR || cartaJugada.Id == CHAMBER {
+    c.recursosDisponibles[MONEDA] = 2 * manufacturasJugadas
+  }
+  if cartaJugada.Id == LIGHTHOUSE {
+    c.recursosDisponibles[MONEDA] = comercialesJugadas
+  }
+
   c.recursosDisponibles[MONEDA] -= cartaJugada.monedasNecesarias
   recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
   for r, _ := range recursos {
