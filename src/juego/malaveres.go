@@ -91,12 +91,11 @@ func (c Contexto) eraEnTurno(t int) (era int){
 
 //Obtiene la carta que se debería jugar en el turno t, dado el estado de cartasJugadas.
 func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada Carta){
-
   pesoMaximo := float32(0) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
   eraActual := c.eraEnTurno(t)
   for _, carta := range c.cartasRestantes {
     if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinJugado) {
-      pesoCarta := c.calcularPeso_promedioDeProduce(cartasJugadas, c.cartasRestantes, carta)
+      pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta)
       if pesoCarta > pesoMaximo {
         pesoMaximo = pesoCarta
         cartaJugada = carta
@@ -104,34 +103,8 @@ func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta) (cartaJugada
     }
   }
   return
-
-}
-/*
-//Calcula el ponderable para un turno
-func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
-  peso = float32(unaCarta.Id)
-  return
 }
 
-func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
-  peso = float32(unaCarta.puntos)
-  return
-}
-*/
-/*
-func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
-	peso = float32(0)
-	w := float32(1.0/CANTIDAD_RECURSOS)
-	var pesos [CANTIDAD_RECURSOS]float32
-	for j:=0; j<CANTIDAD_RECURSOS; j++{
-		pesos[j] = w;
-	}
-	for i := 0;i < CANTIDAD_RECURSOS;i++ {
-		peso += float32(unaCarta.Produce[i]) * pesos[i]
-	}
-	return
-}
-*/
 //Calcula los puntos segun todas las cartasJugadas
 func (c *Contexto) calcularPuntos() {
   c.puntosTotales = 0
@@ -191,12 +164,17 @@ func (c *Contexto) calcularPuntos() {
     }
   }
   puntosCientificos := puntosCientificosIguales*PUNTOS_CIENTIFICOS_IGUALES + puntosCientificosDiferentes
-  puntosMonedas := c.recursosDisponibles[MONEDA]/3 - c.recursosDisponibles[MONEDA]%3
+  puntosMonedas := c.recursosDisponibles[MONEDA]/3
 
   puntosComerciales := c.CalcularPuntosComerciales()
 
   c.puntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
-
+  fmt.Println("### PUNTOS ###")
+  fmt.Println("Puntos militares:", puntosMilitares)
+  fmt.Println("Puntos civiles:", puntosCiviles)
+  fmt.Println("Puntos Monedas:", puntosMonedas)
+  fmt.Println("Puntos cientificos:", puntosCientificos)
+  fmt.Println("Puntos comerciales:", puntosComerciales)
 }
 
 
