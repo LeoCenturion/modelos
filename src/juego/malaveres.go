@@ -116,6 +116,15 @@ func (c *Contexto) calcularPuntos() {
 	cantidadGeometria:=0
 	cantidadEscritura:=0
 	cantidadRueda:=0
+
+	seJugoHaven := false
+	seJugoChamber := false
+	seJugoLighthouse := false
+
+	puntosPorMateriasPrimasAlFinal := 0
+	puntosPorManufacturasAlFinal := 0
+	puntosPorComercialesAlFinal := 0
+
 	for i, cartaJugada := range c.cartasJugadas{
 		switch cartaJugada.Tipo{
 		case CIVIL:
@@ -140,6 +149,20 @@ func (c *Contexto) calcularPuntos() {
 			} else{
 				escudos[2]+=cartaJugada.puntos
 			}
+		case MATERIA_PRIMA:
+			if seJugoHaven { puntosPorMateriasPrimasAlFinal++ }
+		case MANUFACTURA:
+			if seJugoChamber { puntosPorManufacturasAlFinal += 2 }
+		case COMERCIAL:
+			if seJugoLighthouse { puntosPorComercialesAlFinal += 2 }
+		}
+		switch cartaJugada.Id {
+		case HAVEN:
+			seJugoHaven = true
+		case CHAMBER:
+			seJugoChamber = true
+		case LIGHTHOUSE:
+			seJugoLighthouse = true
 		}
 	}
 
@@ -164,25 +187,26 @@ func (c *Contexto) calcularPuntos() {
 	}
 	puntosCientificos := puntosCientificosIguales + puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES
 
-  puntosMonedas := c.recursosDisponibles[MONEDA]/3
+  	puntosMonedas := c.recursosDisponibles[MONEDA]/3
 
-	puntosComerciales := c.CalcularPuntosComerciales()
+	puntosComerciales := puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
 	c.puntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
 	fmt.Println("### PUNTOS ###")
 	fmt.Println("Puntos militares:", puntosMilitares)
 	fmt.Println("Puntos civiles:", puntosCiviles)
 	fmt.Println("Puntos Monedas:", puntosMonedas)
-	fmt.Println("Puntos cientificos:", puntosCientificos)
-	fmt.Println("Puntos cientificos:", puntosCientificosIguales)
-	fmt.Println("Puntos cientificos:", cantidadEscritura)
-	fmt.Println("Puntos cientificos:", cantidadRueda)
-	fmt.Println("Puntos cientificos:", cantidadGeometria)
+	fmt.Println("Puntos cientificos totales:", puntosCientificos)
+	fmt.Println("Puntos cientificos iguales:", puntosCientificosIguales)
+	fmt.Println("Puntos cientificos diferentes:", puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES)
+	fmt.Println("Cantidad de cartas de tipo escritura:", cantidadEscritura)
+	fmt.Println("Cantidad de cartas de tipo rueda:", cantidadRueda)
+	fmt.Println("Cantidad de cartas de tipo geometria:", cantidadGeometria)
 	fmt.Println("Puntos comerciales:", puntosComerciales)
 }
 
 
-func (c *Contexto) CalcularPuntosComerciales() (puntos int){
+/*func (c *Contexto) CalcularPuntosComerciales() (puntos int){
 	//TODO: NO ES OPTIMO PODRIA METERSE EN OTRO LADO; PERO BUE
 	seJugoHaven := false
 	seJugoChamber := false
@@ -212,7 +236,7 @@ func (c *Contexto) CalcularPuntosComerciales() (puntos int){
 	}
 	return puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
-}
+}*/
 /*
 func (c *Contexto) jugarCarta(cartaJugada Carta) {
   if cartaJugada.Id != NO_HACER_NADA {

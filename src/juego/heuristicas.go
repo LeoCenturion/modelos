@@ -72,7 +72,7 @@ func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [I
 	nombre = "CONDOR_ALPINO"
 	switch unaCarta.Tipo {
 		case RUEDA, ESCRITURA, GEOMETRIA:
-				peso = 0.6
+			peso = 0.6
 		case MILITAR:
 			peso = 0.1
 		case CIVIL:
