@@ -47,16 +47,18 @@ func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartas
   maxPrecioRecurso := 0
   maxEsMateriaPrima := false
   for i, r := range recursosDisponibles {
-    dif := r - c.requiere[i]
-    if dif < 0 {
-      c.monedasNecesarias += (-dif) * (precioRecurso[i])
-      if precioRecurso[i] > maxPrecioRecurso {
-        maxPrecioRecurso = precioRecurso[i]
-        maxEsMateriaPrima = recursoEsMateriaPrima(r)
+    if r != MONEDA {
+      dif := r - c.requiere[i]
+      if dif < 0 {
+        c.monedasNecesarias += (-dif) * (precioRecurso[i])
+        if precioRecurso[i] > maxPrecioRecurso {
+          maxPrecioRecurso = precioRecurso[i]
+          maxEsMateriaPrima = recursoEsMateriaPrima(r)
+        }
       }
     }
   }
-
+  c.monedasNecesarias += c.requiere[MONEDA]
   if c.monedasNecesarias <= recursosDisponibles[MONEDA] {
     tieneRecursosSuficientes = true
   } else if maxEsMateriaPrima {
@@ -70,7 +72,6 @@ func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartas
       c.monedasNecesarias -= maxPrecioRecurso
     }
   }
-/*  if comodinJugado { c.monedasNecesarias -= maxPrecioRecurso }*/
   return tieneRecursosSuficientes
 }
 
