@@ -7,7 +7,7 @@ import (
 )
 
 type Carta struct  {
-  Id, Tipo, era, puntos, edificioGratis, cartaRequerida int
+  Id, Tipo, era, puntos, edificioGratis, cartaRequerida, monedasNecesarias int
   Produce, requiere [CANTIDAD_RECURSOS]int
   Nombre string
 }
@@ -27,6 +27,7 @@ func (c *Carta) Init(id, tipo, era, puntos, edificioGratis, cartaRequerida int, 
 
 //Determina si la carta se puede jugar según los parámetros
 func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartasJugadas [TURNOS]Carta, eraActual int, precioRecurso [CANTIDAD_RECURSOS]int, comodinJugado bool) bool {
+  c.monedasNecesarias = 0
   if !(c.era == eraActual || c.era == CUALQUIERA) { return false }
 
   cartaRequeridaJugada := c.cartaRequerida == NINGUNA
@@ -41,25 +42,24 @@ func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartas
    if !cartaRequeridaJugada { return false }
   }
 
-  monedasNecesarias := 0
   tieneRecursosSuficientes := false
   maxPrecioRecurso := 0
   for i, r := range recursosDisponibles {
     dif := r - c.requiere[i]
     if dif < 0 {
-      monedasNecesarias += (-dif) * (precioRecurso[i])
+      c.monedasNecesarias += (-dif) * (precioRecurso[i])
       if precioRecurso[i] > maxPrecioRecurso {
         maxPrecioRecurso = precioRecurso[i]
       }
     }
   }
 
-  if monedasNecesarias <= recursosDisponibles[MONEDA] {
+  if c.monedasNecesarias <= recursosDisponibles[MONEDA] {
     tieneRecursosSuficientes = true
-  } else if comodinJugado && monedasNecesarias - maxPrecioRecurso <= recursosDisponibles[MONEDA] {
+  } else if comodinJugado && c.monedasNecesarias - maxPrecioRecurso <= recursosDisponibles[MONEDA] {
     tieneRecursosSuficientes = true
   }
-
+  if comodinJugado { c.monedasNecesarias -= maxPrecioRecurso }
   return tieneRecursosSuficientes
 }
 
