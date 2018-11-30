@@ -5,7 +5,7 @@ import (
 )
 func main(){
   c := juego.Contexto{}
-  c.CargarCartas("test.csv")
+  c.CargarCartas("cartas.csv")
   c.MostrarCartasDisponibles()
   c.ComenzarSimulacion()
   c.MostrarResultados()
