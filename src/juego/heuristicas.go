@@ -86,7 +86,7 @@ func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [I
 }
 
 func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-  nombre = "ORNITORRINCO_MAXIMO"
+  nombre = "OSPAGHETTI"
   switch unaCarta.Tipo {
     case RUEDA, ESCRITURA, GEOMETRIA:
       peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)
@@ -103,7 +103,7 @@ func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
 }
 
 func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-  nombre = "ORNITORRINCO_MAXIMO"
+  nombre = "CHOCOLATE"
   switch unaCarta.Tipo {
     case RUEDA, ESCRITURA, GEOMETRIA:
       peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
