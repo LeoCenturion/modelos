@@ -110,9 +110,65 @@ func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [IN
 //Calcula los puntos segun todas las cartasJugadas
 func (c *Contexto) calcularPuntos() {
   c.puntosTotales = 0
-  for _, carta := range c.cartasJugadas {
+  /*for _, carta := range c.cartasJugadas {
     c.puntosTotales += carta.Id
+  }*/
+
+  escudos:=[3]int{0,0,0}
+  puntosCiviles:=0
+  cantidadGeometria:=0
+  cantidadEscritura:=0
+  cantidadRueda:=0
+  for i, cartaJugada := range c.cartasJugadas{
+    switch cartaJugada.tipo{
+    case CIVIL:
+      //puntos civiles
+      puntosCiviles+=cartaJugada.puntos
+    case GEOMETRIA:
+      //cantidad de cartas científicas de cada tipo
+      cantidadGeometria+=1
+    case RUEDA:
+      cantidadRueda+=1
+  case ESCRITURA:
+    cantidadEscritura+=1
+  case MILITAR:
+    //cantidad de escudos que tiene en las batallas
+      if i<BATALLA1{
+        escudos[0]+=cartaJugada.puntos
+        escudos[1]+=cartaJugada.puntos
+        escudos[2]+=cartaJugada.puntos
+      } else if i<BATALLA2{
+        escudos[1]+=cartaJugada.puntos
+        escudos[2]+=cartaJugada.puntos
+      } else{
+        escudos[2]+=cartaJugada.puntos
+      }
+    }
   }
+  
+  //puntos militares
+  puntosMilitares := 0
+  puntosContrincante:=[3]int{CONTRINCANTE1, CONTRINCANTE2, CONTRINCANTE3}
+  for i, _ := range puntosContrincante{
+    if escudos[i]<puntosContrincante[i]{
+      puntosMilitares-=1
+  } else if escudos[i]>puntosContrincante[i]{
+    puntosMilitares+=puntosContrincante[i]
+  }
+  }
+
+  puntosCientificosIguales := cantidadGeometria*cantidadGeometria + cantidadRueda*cantidadRueda + cantidadEscritura*cantidadEscritura
+  puntosCientificosDiferentes:=cantidadEscritura
+  cantidadesCientificas:=[3]int{cantidadEscritura,cantidadRueda,cantidadGeometria}
+  for _,cantidad := range cantidadesCientificas{
+    if cantidad<puntosCientificosDiferentes{
+      puntosCientificosDiferentes = cantidad
+    }
+  }
+  puntosCientificos := puntosCientificosIguales*PUNTOS_CIENTIFICOS_IGUALES + puntosCientificosDiferentes
+  puntosMonedas := c.recursosDisponibles[17][MONEDA]/3 - c.recursosDisponibles[17][MONEDA]%3
+
+  c.puntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos
 }
 
 //Realiza la heurística de construcción
