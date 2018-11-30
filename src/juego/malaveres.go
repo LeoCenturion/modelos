@@ -78,9 +78,9 @@ func (c *Contexto) CargarCartas(archivo string) {
 //Determina la era a la que pertence el turno t
 func (c Contexto) eraEnTurno(t int) (era int){
 	era = 1
-	if t >= 7 && t <= 12 {
+	if t+1 >= 7 && t+1 <= 12 {
 		era = 2
-	} else if t >= 13 {
+	} else if t+1 >= 13 {
 		era = 3
 	}
 	return
@@ -217,7 +217,7 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
   if cartaJugada.Id != NO_HACER_NADA {
     c.cartasRestantes[cartaJugada.Id].Id = NULL
   }
-  
+
 if cartaJugada.Id == ID_CARTA_COMODIN {
     c.comodinJugado = true
   }

@@ -28,8 +28,8 @@ func (c *Carta) Init(id, tipo, era, puntos, edificioGratis, cartaRequerida int, 
 //Determina si la carta se puede jugar según los parámetros
 
 func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartasJugadas [TURNOS]Carta, eraActual int, precioRecurso [CANTIDAD_RECURSOS]int, comodinMateriaPrimaJugado, comodinManufacturaJugado bool) bool {
-
   c.monedasNecesarias = 0
+
   if !(c.era == eraActual || c.era == CUALQUIERA) { return false }
 
   cartaRequeridaJugada := c.cartaRequerida == NINGUNA
@@ -43,7 +43,6 @@ func (c *Carta) SePuedeJugar(recursosDisponibles  [CANTIDAD_RECURSOS]int, cartas
    }
    if !cartaRequeridaJugada { return false }
   }
-
   tieneRecursosSuficientes := false
   maxPrecioRecurso := 0
   maxEsMateriaPrima := false
