@@ -55,7 +55,7 @@ func (c *Contexto) ORNITORRINCO_MAXIMO(cartasJugadas [TURNOS]Carta, cartasRestan
 	nombre = "ORNITORRINCO_MAXIMO"
 	switch unaCarta.Tipo {
 		case RUEDA, ESCRITURA, GEOMETRIA:
-				peso = 0.6
+			peso = 0.6
 		case MILITAR:
 			peso = 0.1
 		case CIVIL:
@@ -85,9 +85,26 @@ func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [I
 	return
 }
 
+func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
+  nombre = "ORNITORRINCO_MAXIMO"
+  switch unaCarta.Tipo {
+    case RUEDA, ESCRITURA, GEOMETRIA:
+      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)
+    case MILITAR:
+      peso = float32(unaCarta.puntos)
+    case CIVIL:
+      peso = float32(unaCarta.puntos)
+    case COMERCIAL:
+      peso = float32(unaCarta.Produce[MONEDA])
+    default:
+      peso = 1
+  }
+  return
+}
+
 func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
 	nombre := ""
-	peso, nombre = c.calcularPeso_puntos(cartasJugadas, cartasRestantes, unaCarta)
+	peso, nombre = c.SPAGHETTI(cartasJugadas, cartasRestantes, unaCarta)
 	fmt.Println("Calculado con heurísitca:", nombre)
 	return
 }
