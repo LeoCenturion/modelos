@@ -61,7 +61,7 @@ const CONTRINCANTE2 = 3
 const CONTRINCANTE3 = 5
 
 //puntos científicos por cada grupo de 3 tipos distintos
-const PUNTOS_CIENTIFICOS_IGUALES = 7
+const PUNTOS_CIENTIFICOS_DIFERENTES = 7
 
 
 func recursoEsMateriaPrima (recurso int) (esMateriaPrima bool) {

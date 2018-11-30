@@ -157,13 +157,14 @@ func (c *Contexto) calcularPuntos() {
 	puntosCientificosIguales := cantidadGeometria*cantidadGeometria + cantidadRueda*cantidadRueda + cantidadEscritura*cantidadEscritura
 	puntosCientificosDiferentes:=cantidadEscritura
 	cantidadesCientificas:=[3]int{cantidadEscritura,cantidadRueda,cantidadGeometria}
-	for _,cantidad := range cantidadesCientificas{
+	for _,cantidad := range cantidadesCientificas {
 		if cantidad<puntosCientificosDiferentes{
 			puntosCientificosDiferentes = cantidad
 		}
 	}
-	puntosCientificos := puntosCientificosIguales*PUNTOS_CIENTIFICOS_IGUALES + puntosCientificosDiferentes
-	puntosMonedas := c.recursosDisponibles[MONEDA]/3
+	puntosCientificos := puntosCientificosIguales + puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES
+
+  puntosMonedas := c.recursosDisponibles[MONEDA]/3
 
 	puntosComerciales := c.CalcularPuntosComerciales()
 
@@ -297,6 +298,7 @@ func (c *Contexto) ComenzarSimulacion() {
     cartaJugada := c.SimularTurno(t, c.cartasJugadas)
     c.cartasJugadas[t] = cartaJugada
     c.jugarCarta(cartaJugada)
+    fmt.Println("Monedas turno", t,":", c.recursosDisponibles[MONEDA])
   }
   c.calcularPuntos()
 
