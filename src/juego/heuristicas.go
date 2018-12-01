@@ -30,6 +30,17 @@ func (c *Contexto) calcularPeso_promedioDeProduce(cartasJugadas [TURNOS]Carta, c
 	return
 }
 
+func(c *Contexto) calcularPeso_cantidadCartasQueLibera(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
+	for _,carta:=range cartasRestantes{
+		if carta.edificioGratis==unaCarta.Id{
+			peso+=float32(1)
+		}
+	}
+
+	return
+}
+
+
 func (c *Contexto) calcularPeso_puntosDeCartaQueLibera(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
 /*
 	if  cartasRestantes[unaCarta.edificioGratis].Id == -1 {
@@ -101,13 +112,13 @@ func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
   //nombre = "CHOCOLATE"
   switch unaCarta.Tipo {
     case RUEDA, ESCRITURA, GEOMETRIA:
-      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_puntosDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case MILITAR:
-      peso = float32(unaCarta.puntos)+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(unaCarta.puntos)+c.calcularPeso_puntosDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case CIVIL:
-      peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_puntosDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case COMERCIAL:
-      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_puntosDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     default:
       peso = MONEDAS_POR_NO_HACER_NADA/PUNTOS_POR_MONEDAS
   }
@@ -141,7 +152,7 @@ func (c *Contexto) KOALA_CHICLOSO_PAPOTEADO(cartasJugadas [TURNOS]Carta, cartasR
 	necesitanRecurso := [CANTIDAD_RECURSOS]int{}
 	recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
 
-	for _, carta := range cartasRestantes {
+	for _, carta := range cartasJugadas {
 		for _ , r := range recursos {
 			recursosDisponibles[r] += carta.Produce[r]
 		}
