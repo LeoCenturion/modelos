@@ -47,11 +47,18 @@ func (c *Contexto) calcularPeso_puntosDeCartaQueLibera(cartasJugadas [TURNOS]Car
 }
 
 func (c *Contexto) calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
-	if  cartasRestantes[unaCarta.edificioGratis].Id == -1{
+	/*if  cartasRestantes[unaCarta.edificioGratis].Id == -1{
 		peso = 0
 	}else{
 		peso =float32( c.calcularPeso_promedioDeProduce(cartasJugadas,cartasRestantes,cartasRestantes[unaCarta.edificioGratis], t))
+	}*/
+
+	for _,carta:=range cartasRestantes{
+		if carta.edificioGratis==unaCarta.Id{
+			peso+=float32(c.calcularPeso_promedioDeProduce(cartasJugadas,cartasRestantes,cartasRestantes[unaCarta.edificioGratis], t))
+		}
 	}
+
 	return
 }
 
