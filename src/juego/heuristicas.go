@@ -1,8 +1,8 @@
 package juego
 
-import (
+/*import (
 	"fmt"
-)
+)*/
 
 //Calcula el ponderable para un turno
 
@@ -11,8 +11,8 @@ func (c *Contexto) calcularPeso_id(cartasJugadas [TURNOS]Carta, cartasRestantes 
 	return
 }
 
-func (c *Contexto) calcularPeso_puntos(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-	nombre = "PUNTOS"
+func (c *Contexto) calcularPeso_puntos(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
+	//nombre = "PUNTOS"
 	peso = float32(unaCarta.puntos)
 	return
 }
@@ -41,7 +41,7 @@ func (c *Contexto) calcularPeso_puntosDeCartaQueLibera(cartasJugadas [TURNOS]Car
 	return
 }
 
-func (c *Contexto) calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
+func (c *Contexto) calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
 	if  cartasRestantes[unaCarta.edificioGratis].Id == -1{
 		peso = 0
 	}else{
@@ -51,8 +51,8 @@ func (c *Contexto) calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas [TU
 }
 
 
-func (c *Contexto) ORNITORRINCO_MAXIMO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-	nombre = "ORNITORRINCO_MAXIMO"
+func (c *Contexto) ORNITORRINCO_MAXIMO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
+	//nombre = "ORNITORRINCO_MAXIMO"
 	switch unaCarta.Tipo {
 		case RUEDA, ESCRITURA, GEOMETRIA:
 			peso = 0.6
@@ -68,8 +68,8 @@ func (c *Contexto) ORNITORRINCO_MAXIMO(cartasJugadas [TURNOS]Carta, cartasRestan
 	return
 }
 
-func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-	nombre = "CONDOR_ALPINO"
+func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
+	//nombre = "CONDOR_ALPINO"
 	switch unaCarta.Tipo {
 		case RUEDA, ESCRITURA, GEOMETRIA:
 			peso = 0.6
@@ -85,8 +85,8 @@ func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [I
 	return
 }
 
-func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-  nombre = "OSPAGHETTI"
+func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
+  //nombre = "SPAGHETTI"
   switch unaCarta.Tipo {
     case RUEDA, ESCRITURA, GEOMETRIA:
       peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)
@@ -102,26 +102,47 @@ func (c *Contexto) SPAGHETTI(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
   return
 }
 
-func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32, nombre string) {
-  nombre = "CHOCOLATE"
+func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
+  //nombre = "CHOCOLATE"
   switch unaCarta.Tipo {
     case RUEDA, ESCRITURA, GEOMETRIA:
-      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case MILITAR:
-      peso = float32(unaCarta.puntos)+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(unaCarta.puntos)+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case CIVIL:
-      peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     case COMERCIAL:
-      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedoProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
     default:
       peso = MONEDAS_POR_NO_HACER_NADA/PUNTOS_POR_MONEDAS
   }
   return
 }
 
-func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta) (peso float32) {
-	nombre := ""
+func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, nroHeuristica int) (peso float32) {
+	/*nombre := ""
 	peso, nombre = c.CHOCOLATE(cartasJugadas, cartasRestantes, unaCarta)
 	fmt.Println("Calculado con heurísitca:", nombre)
+	return*/
+	switch nroHeuristica{
+	case HEURISTICA_ID:
+		peso = c.calcularPeso_id(cartasJugadas, cartasRestantes, unaCarta)
+	case HEUTISTICA_PUNTOS:
+		peso = c.calcularPeso_puntos(cartasJugadas, cartasRestantes, unaCarta)
+	case HEURISTICA_PROMEDIO_DE_PRODUCE:
+		peso = c.calcularPeso_promedioDeProduce(cartasJugadas, cartasRestantes, unaCarta)
+	case HEURISTICA_PUNTOS_DE_CARTA_QUE_LIBERA:
+		peso = c.calcularPeso_puntosDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+	case HEURISTICA_PROMEDIO_PRODUCE_DE_CARTA_QUE_LIBERA:
+		peso = c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta)
+	case ORNITORRINCO_MAXIMO:
+		peso = c.ORNITORRINCO_MAXIMO(cartasJugadas, cartasRestantes, unaCarta)
+	case CONDOR_ALPINO:
+		peso = c.CONDOR_ALPINO(cartasJugadas, cartasRestantes, unaCarta)
+	case SPAGHETTI:
+		peso = c.SPAGHETTI(cartasJugadas, cartasRestantes, unaCarta)
+	case CHOCOLATE:
+		peso = c.CHOCOLATE(cartasJugadas, cartasRestantes, unaCarta)
+	}
 	return
 }

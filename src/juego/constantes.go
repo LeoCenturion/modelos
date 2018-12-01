@@ -66,6 +66,16 @@ const PUNTOS_CIENTIFICOS_DIFERENTES = 7
 const PUNTOS_POR_MONEDAS = 3
 const MONEDAS_POR_NO_HACER_NADA = 3
 
+//identificadores de las heuristicas
+const HEURISTICA_ID = 0
+const HEUTISTICA_PUNTOS = 1
+const HEURISTICA_PROMEDIO_DE_PRODUCE = 2
+const HEURISTICA_PUNTOS_DE_CARTA_QUE_LIBERA = 3
+const HEURISTICA_PROMEDIO_PRODUCE_DE_CARTA_QUE_LIBERA = 4
+const ORNITORRINCO_MAXIMO = 5
+const CONDOR_ALPINO = 6
+const SPAGHETTI = 7
+const CHOCOLATE = 8
 
 func recursoEsMateriaPrima (recurso int) (esMateriaPrima bool) {
   esMateriaPrima = recurso < CERAMICA
