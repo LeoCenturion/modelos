@@ -102,6 +102,27 @@ func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
   return
 }
 
+func (c *Contexto) CHOCOLATE_CON_PAPAS_FRITAS(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
+  //nombre = "CHOCOLATE"
+  switch unaCarta.Tipo {
+    case RUEDA, ESCRITURA, GEOMETRIA:
+      peso = float32(1+PUNTOS_CIENTIFICOS_DIFERENTES)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+    case MILITAR:
+      peso = float32(unaCarta.puntos)+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+    case CIVIL:
+      peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+    case COMERCIAL:
+      peso = float32(unaCarta.Produce[MONEDA])+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+    case NO_HACER_NADA:
+    	peso = MONEDAS_POR_NO_HACER_NADA/PUNTOS_POR_MONEDAS
+    case MARAVILLA:
+    	peso = float32(unaCarta.puntos)*2.0+c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)-float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS
+    default:
+      peso = -float32(unaCarta.monedasNecesarias)/PUNTOS_POR_MONEDAS + c.calcularPeso_promedioProduceDeCartaQueLibera(cartasJugadas, cartasRestantes, unaCarta,t)+2.0 * c.calcularPeso_promedioDeProduce(cartasJugadas, cartasRestantes, unaCarta,t)
+  }
+  return
+}
+
 func (c *Contexto) KOALA_CHICLOSO_PAPOTEADO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
 	var recursosDisponibles [CANTIDAD_RECURSOS]int
 	var recursosQueHabilita [CANTIDAD_RECURSOS]int
@@ -227,6 +248,8 @@ func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [IN
 		peso = c.CHOCOLATE(cartasJugadas, cartasRestantes, unaCarta,t)
 	case KOALA_CHICLOSO_PAPOTEADO:
 		peso = c.KOALA_CHICLOSO_PAPOTEADO(cartasJugadas, cartasRestantes, unaCarta, t)
+	case CHOCOLATE_CON_PAPAS_FRITAS:
+		peso = c.CHOCOLATE_CON_PAPAS_FRITAS(cartasJugadas, cartasRestantes, unaCarta, t)
 	}
 	return
 }

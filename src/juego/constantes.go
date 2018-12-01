@@ -77,6 +77,7 @@ const CONDOR_ALPINO = 6
 const SPAGHETTI = 7
 const CHOCOLATE = 8
 const KOALA_CHICLOSO_PAPOTEADO = 9
+const CHOCOLATE_CON_PAPAS_FRITAS = 10
 
 func recursoEsMateriaPrima (recurso int) (esMateriaPrima bool) {
   esMateriaPrima = recurso < CERAMICA

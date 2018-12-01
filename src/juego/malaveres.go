@@ -304,6 +304,8 @@ func (c *Contexto) ObtenerNombreHeuristica(heuristica int) string{
 		return "CHOCOLATE"
 	case KOALA_CHICLOSO_PAPOTEADO:
 		return "KOALA_CHICLOSO_PAPOTEADO"
+	case CHOCOLATE_CON_PAPAS_FRITAS:
+		return "CHOCOLATE_CON_PAPAS_FRITAS"
 	}
 	return "NO SE QUE HEURISTICA ES!!!"
 }
