@@ -40,7 +40,6 @@ const INDICE_MAXIMO_CARTA = 91
 const NULL = -1
 const ID_CARTA_COMODIN = 61
 const CUALQUIERA = -1
-const PRECIO_INICIAL_RECURSO = 2
 const MARKETPLACE = 75
 const WEST_TRADING_POST = 74
 const HAVEN = 88
@@ -65,6 +64,7 @@ const PUNTOS_CIENTIFICOS_DIFERENTES = 7
 
 const PUNTOS_POR_MONEDAS = 3
 const MONEDAS_POR_NO_HACER_NADA = 3
+const PRECIO_INICIAL_RECURSO = 2
 
 //identificadores de las heuristicas
 const HEURISTICA_ID = 0
