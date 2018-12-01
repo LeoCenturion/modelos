@@ -9,17 +9,17 @@ import (
 )
 
 type Contexto struct {
-  cartasJugadas [TURNOS]Carta
+  CartasJugadas [TURNOS]Carta
   cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
   recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int
   PuntosTotales int
   comodinMateriaPrimaJugado, comodinManufacturaJugado bool
-
+  DetalleDePuntos string
 }
 
 func (c *Contexto) Resetear(){
-	for i, _ := range c.cartasJugadas {
-		c.cartasJugadas[i].Id = NULL
+	for i, _ := range c.CartasJugadas {
+		c.CartasJugadas[i].Id = NULL
 	}
 
 	for i, _ := range c.cartasDisponibles {
@@ -115,7 +115,7 @@ func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta, nroHeuristic
 //Calcula los puntos segun todas las cartasJugadas
 func (c *Contexto) calcularPuntos() {
 	c.PuntosTotales = 0
-	/*for _, carta := range c.cartasJugadas {
+	/*for _, carta := range c.CartasJugadas {
     c.PuntosTotales += carta.Id
   }*/
 
@@ -133,7 +133,7 @@ func (c *Contexto) calcularPuntos() {
 	puntosPorManufacturasAlFinal := 0
 	puntosPorComercialesAlFinal := 0
 
-	for i, cartaJugada := range c.cartasJugadas{
+	for i, cartaJugada := range c.CartasJugadas{
 		switch cartaJugada.Tipo{
 		case CIVIL:
 			//puntos civiles
@@ -200,6 +200,8 @@ func (c *Contexto) calcularPuntos() {
 	puntosComerciales := puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
 	c.PuntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
+	
+	c.DetalleDePuntos = fmt.Sprintf("\nPuntos Militares: %d \nPuntos civiles: %d\nPuntos monedas: %d\nPuntos cientificos totales: %d\nPuntos cientificos iguales: %d\nPuntos cientificos diferentes: %d\nCantidad de cartas de tipo escritura: %d\nCantidad de cartas de tipo rueda: %d\nCantidad de cartas de tipo geometria: %d\nPuntos comerciales: %d\n", puntosMilitares, puntosCiviles, puntosMonedas, puntosCientificos, puntosCientificosIguales, puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES, cantidadEscritura, cantidadRueda, cantidadGeometria, puntosComerciales)
 	/*fmt.Println("### PUNTOS ###")
 	fmt.Println("Puntos militares:", puntosMilitares)
 	fmt.Println("Puntos civiles:", puntosCiviles)
@@ -239,7 +241,7 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
   materiasPrimasJugadas := 0
   manufacturasJugadas := 0
   comercialesJugadas := 0
-  for _, unaCarta := range c.cartasJugadas {
+  for _, unaCarta := range c.CartasJugadas {
     switch unaCarta.Tipo {
       case MATERIA_PRIMA:
         materiasPrimasJugadas++
@@ -269,8 +271,8 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
 //Realiza la heurística de construcción
 func (c *Contexto) ComenzarSimulacion(nroHeuristica int) {
   for t:= 0; t < TURNOS;t++ {
-    cartaJugada := c.SimularTurno(t, c.cartasJugadas, nroHeuristica)
-    c.cartasJugadas[t] = cartaJugada
+    cartaJugada := c.SimularTurno(t, c.CartasJugadas, nroHeuristica)
+    c.CartasJugadas[t] = cartaJugada
     c.jugarCarta(cartaJugada)
     //fmt.Println("Monedas turno", t,":", c.recursosDisponibles[MONEDA])
   }
@@ -279,13 +281,68 @@ func (c *Contexto) ComenzarSimulacion(nroHeuristica int) {
 
 }
 
-//muestra los resultados de la simulación (las cartas que se deciden jugar)
-func (c Contexto) MostrarResultados() {
-	fmt.Println("### Resultados ###")
-	for i, e := range c.cartasJugadas {
-		fmt.Println("Carta jugada en turno", i+1, ":",e.Nombre)
+//devuelve el nombre de la heuristica de la cual se pasa el nro por parametro
+func (c *Contexto) ObtenerNombreHeuristica(heuristica int) string{
+	switch heuristica{
+	case HEURISTICA_ID:
+		return "HEURISTICA_ID"
+	case HEUTISTICA_PUNTOS:
+		return "HEUTISTICA_PUNTOS"
+	case HEURISTICA_PROMEDIO_DE_PRODUCE:
+		return "HEURISTICA_PROMEDIO_DE_PRODUCE"
+	case HEURISTICA_PUNTOS_DE_CARTA_QUE_LIBERA:
+		return "HEURISTICA_PUNTOS_DE_CARTA_QUE_LIBERA"
+	case HEURISTICA_PROMEDIO_PRODUCE_DE_CARTA_QUE_LIBERA:
+		return "HEURISTICA_PROMEDIO_PRODUCE_DE_CARTA_QUE_LIBERA"
+	case ORNITORRINCO_MAXIMO:
+		return "ORNITORRINCO_MAXIMO"
+	case CONDOR_ALPINO:
+		return "CONDOR_ALPINO"
+	case SPAGHETTI:
+		return "SPAGHETTI"
+	case CHOCOLATE:
+		return "CHOCOLATE"
 	}
-	fmt.Println("Puntos obtenidos:", c.PuntosTotales)
+	return "NO SE QUE HEURISTICA ES!!!"
+}
+
+//devuelve el nombre del tipo del nro que se pasa por parametro
+func (c Contexto) obtenerNombreTipo(tipo int) string{
+	switch tipo{
+	case GEOMETRIA:
+		return "Cientifica tipo Geometria"
+	case RUEDA:
+		return "Cientifica tipo Rueda"
+	case ESCRITURA:
+		return "Cientifica tipo Escritura"
+	case CIVIL:
+		return "Civil"
+	case MATERIA_PRIMA:
+		return "Materia Prima"
+	case MANUFACTURA:
+		return "Manufactura"
+	case COMERCIAL:
+		return "Comercial"
+	case MILITAR:
+		return "Militar"
+	case MARAVILLA:
+		return "Maravilla"
+	case NO_HACER_NADA:
+		return "No hacer nada"
+	}
+	return "NO SE DE QUE TIPO ES!!!"
+}
+
+//muestra los resultados de la simulación (las cartas que se deciden jugar)
+func (c Contexto) MostrarResultados(cartasJugadas [TURNOS]Carta, detalleDePuntos string, puntosTotales int) {
+	fmt.Println("### Resultados ###")
+	nombreTipo := ""
+	for i, e := range cartasJugadas {
+		nombreTipo = c.obtenerNombreTipo(e.Tipo)
+		fmt.Println("Carta jugada en turno", i+1, ":",e.Nombre,"-",nombreTipo)
+	}
+	fmt.Println(detalleDePuntos)
+	fmt.Println("Puntos obtenidos:", puntosTotales)
 }
 
 //Muestra todas las cartas con toda la información cargada del csv
