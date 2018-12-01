@@ -76,7 +76,7 @@ const ORNITORRINCO_MAXIMO = 5
 const CONDOR_ALPINO = 6
 const SPAGHETTI = 7
 const CHOCOLATE = 8
-
+const KOALA_CHICLOSO_PAPOTEADO = 9
 func recursoEsMateriaPrima (recurso int) (esMateriaPrima bool) {
   esMateriaPrima = recurso < CERAMICA
   return

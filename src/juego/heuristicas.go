@@ -102,6 +102,60 @@ func (c *Contexto) CHOCOLATE(cartasJugadas [TURNOS]Carta, cartasRestantes [INDIC
   return
 }
 
+func (c *Contexto) KOALA_CHICLOSO_PAPOTEADO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
+	var recursosDisponibles [CANTIDAD_RECURSOS]int
+	var recursosQueHabilita [CANTIDAD_RECURSOS]int
+	necesitanRecurso := [CANTIDAD_RECURSOS]int{}
+	recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
+
+	for _, carta := range cartasRestantes {
+		for _ , r := range recursos {
+			recursosDisponibles[r] += carta.Produce[r]
+		}
+	}
+
+	for _ , r := range recursos {
+		recursosQueHabilita[r] += unaCarta.Produce[r] * 3
+	}
+
+	for _, carta := range cartasRestantes {
+		for _ , r := range recursos {
+				necesitanRecurso[r] +=carta.requiere[r]
+		}
+	}
+
+	cantidadRecursosNuevos := 0
+	cantidadDeHabilitacionesNuevas := 0
+	for _, r :=  range recursos {
+		cantidadRecursosNuevos += recursosQueHabilita[r]
+	}
+
+	for _, r := range recursos {
+		dif := recursosDisponibles[r] - necesitanRecurso[r]
+		if dif  < 0 {
+			if dif + recursosQueHabilita[r] >= 0 {
+				cantidadDeHabilitacionesNuevas++
+			}
+		}
+	}
+
+	peso = float32(cantidadDeHabilitacionesNuevas) * cnn(4 - t) + float32(cantidadRecursosNuevos) * cnn(3-t) * 0.9
+	peso += float32(unaCarta.puntos)
+	switch unaCarta.Tipo {
+		case GEOMETRIA, ESCRITURA, RUEDA:
+			peso += float32(t) * 4
+	}
+  return
+}
+
+func cnn(a int) float32 {
+	if a < 0 {
+		return float32(0)
+	} else {
+		return float32(a)
+	}
+}
+
 func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [INDICE_MAXIMO_CARTA]Carta, unaCarta Carta, t int) (peso float32) {
 	recursosQueHabilita := 0
 	necesitanRecurso := [CANTIDAD_RECURSOS]int{}
@@ -171,6 +225,8 @@ func (c *Contexto) calcularPeso(cartasJugadas [TURNOS]Carta, cartasRestantes [IN
 		peso = c.SPAGHETTI(cartasJugadas, cartasRestantes, unaCarta,t)
 	case CHOCOLATE:
 		peso = c.CHOCOLATE(cartasJugadas, cartasRestantes, unaCarta,t)
+	case KOALA_CHICLOSO_PAPOTEADO:
+		peso = c.KOALA_CHICLOSO_PAPOTEADO(cartasJugadas, cartasRestantes, unaCarta, t)
 	}
 	return
 }
