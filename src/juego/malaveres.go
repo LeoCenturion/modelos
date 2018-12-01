@@ -101,7 +101,7 @@ func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta, nroHeuristic
   eraActual := c.eraEnTurno(t)
   for _, carta := range c.cartasRestantes {
     if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado) {
-      pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta, nroHeuristica)
+      pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta, nroHeuristica, t)
       if pesoCarta > pesoMaximo {
         pesoMaximo = pesoCarta
         cartaJugada = carta
