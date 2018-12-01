@@ -1,7 +1,6 @@
 package juego
 
 import (
-		"time"
 		"math/rand"
 )
 
@@ -131,9 +130,7 @@ func (c *Contexto) CONDOR_ALPINO(cartasJugadas [TURNOS]Carta, cartasRestantes [I
 		case RUEDA, ESCRITURA, GEOMETRIA:
 			peso = 0.3 * float32(t)
 		default:
-			s1 := rand.NewSource(time.Now().UnixNano())
-			r1 := rand.New(s1)
-			ruido := r1.Float32()
+			ruido := rand.Float32()
 			if recursosQueHabilita != 0 {
 				peso = (float32(recursosQueHabilita) - ruido * prom)/float32(recursosQueHabilita)
 				if peso < 0 {
