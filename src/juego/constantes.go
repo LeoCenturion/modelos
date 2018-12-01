@@ -54,6 +54,11 @@ const BATALLA1 = 6
 const BATALLA2 = 12
 const BATALLA3 = 18
 
+//turnos de inicio y fin de las eras
+const TURNO_QUE_EMPIEZA_ERA_2 = 7
+const TURNO_QUE_FINALIZA_ERA_2 = 12
+const TURNO_QUE_EMPIEZA_ERA_3 = 13
+
 //puntos militares del contrincante para las batallas
 const CONTRINCANTE1 = 1
 const CONTRINCANTE2 = 3

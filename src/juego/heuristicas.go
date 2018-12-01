@@ -166,6 +166,16 @@ func (c *Contexto) KOALA_CHICLOSO_PAPOTEADO(cartasJugadas [TURNOS]Carta, cartasR
 		case GEOMETRIA, ESCRITURA, RUEDA:
 			peso += float32(t) * 4
 	}
+	cantidadDeCartasHabilitadas := 0
+	for _,carta:=range cartasRestantes{
+		if carta.edificioGratis==unaCarta.Id{
+			cantidadDeCartasHabilitadas++
+		}
+	}
+	/*if t>=3{
+		peso += 3000000.0*float32(cantidadDeCartasHabilitadas)
+	}*/
+	
   return
 }
 

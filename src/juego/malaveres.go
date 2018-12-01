@@ -86,9 +86,9 @@ func (c *Contexto) CargarCartas(archivo string) {
 //Determina la era a la que pertence el turno t
 func (c Contexto) eraEnTurno(t int) (era int){
 	era = 1
-	if t+1 >= 7 && t+1 <= 12 {
+	if t+1 >= TURNO_QUE_EMPIEZA_ERA_2 && t+1 <= TURNO_QUE_FINALIZA_ERA_2 {
 		era = 2
-	} else if t+1 >= 13 {
+	} else if t+1 >= TURNO_QUE_EMPIEZA_ERA_3 {
 		era = 3
 	}
 	return
