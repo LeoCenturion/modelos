@@ -63,10 +63,10 @@ func main(){
   }
   cambioEnTurno := 0
   cartaCambiada := 0
-  for i:= 0; i < 1000; i++ {
+  for i:= 0; i < 100; i++ {
       s2 := rand.NewSource(time.Now().UnixNano())
       r2 := rand.New(s2)
-      turnoCambio := r2.Intn(juego.TURNOS)
+      turnoCambio := r2.Intn(juego.TURNOS-1) + 1
       turnoAnteriorCambio := turnoCambio -1
       if turnoCambio == 0 {
         turnoAnteriorCambio = 0
@@ -79,7 +79,7 @@ func main(){
       it.Init(cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno)
       it.RejugarUltimaCarta(turnoAnteriorCambio, cartaCambio)
       it.ComenzarSimulacion(mejorHeuristica, turnoCambio)
-      if mejoresPuntos <= it.PuntosTotales{
+      if mejoresPuntos <= it.PuntosTotales {
     		mejoresPuntos = it.PuntosTotales
     		//cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno = it.GetEstado()
         cartasJugadas = it.CartasJugadas
