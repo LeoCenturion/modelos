@@ -27,12 +27,9 @@ func (c *Contexto) Resetear(){
 	}
 
 	for i, _ := range c.precioRecursos {
-		c.precioRecursos[i] = 1
+		c.precioRecursos[i] = PRECIO_INICIAL_RECURSO
 		c.recursosDisponibles[i] = 0
 	}
-	c.precioRecursos[PAPIRO] = 2
-	c.precioRecursos[TELA] = 2
-	c.precioRecursos[CERAMICA] = 2
 
 	c.PuntosTotales = 0
 	c.comodinMateriaPrimaJugado = false
