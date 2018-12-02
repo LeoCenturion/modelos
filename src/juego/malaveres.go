@@ -11,15 +11,39 @@ import (
 type Contexto struct {
   CartasJugadas [TURNOS]Carta
   cartasDisponibles, cartasRestantes [INDICE_MAXIMO_CARTA]Carta
+	cartasJugablesEnTurno [TURNOS][INDICE_MAXIMO_CARTA]Carta
   recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int
   PuntosTotales int
   comodinMateriaPrimaJugado, comodinManufacturaJugado bool
   DetalleDePuntos string
 }
 
+func (c Contexto) GetEstado() ([TURNOS]Carta, [INDICE_MAXIMO_CARTA]Carta,[INDICE_MAXIMO_CARTA]Carta, [CANTIDAD_RECURSOS]int, [CANTIDAD_RECURSOS]int, bool, bool, [TURNOS][INDICE_MAXIMO_CARTA]Carta) {
+	return c.CartasJugadas, c.cartasDisponibles, c.cartasRestantes, c.recursosDisponibles, c.precioRecursos, c.comodinManufacturaJugado, c.comodinMateriaPrimaJugado, c.cartasJugablesEnTurno
+}
+
+func (c *Contexto) Init(cartasJugadas [TURNOS]Carta, cartasDisponibles, cartasRestantes[INDICE_MAXIMO_CARTA]Carta, recursosDisponibles, precioRecursos [CANTIDAD_RECURSOS]int,comodinManufacturaJugado, comodinMateriaPrimaJugado bool, cartasJugablesEnTurno [TURNOS][INDICE_MAXIMO_CARTA]Carta) {
+	c.CartasJugadas = cartasJugadas
+	c.cartasDisponibles = cartasDisponibles
+	c.cartasRestantes = cartasRestantes
+	c.recursosDisponibles = recursosDisponibles
+	c.precioRecursos = precioRecursos
+	c.comodinManufacturaJugado = comodinManufacturaJugado
+	c.comodinMateriaPrimaJugado = comodinMateriaPrimaJugado
+	c.cartasJugablesEnTurno = cartasJugablesEnTurno
+}
+
 func (c *Contexto) Resetear(){
 	for i, _ := range c.CartasJugadas {
 		c.CartasJugadas[i].Id = NULL
+	}
+
+	for i := 0; i < TURNOS; i++ {
+		for j := 0; j < INDICE_MAXIMO_CARTA; j ++ {
+			carta := Carta{}
+			carta.Id = NULL
+			c.cartasJugablesEnTurno[i][j] = carta
+		}
 	}
 
 	for i, _ := range c.cartasDisponibles {
@@ -101,7 +125,8 @@ func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta, nroHeuristic
   eraActual := c.eraEnTurno(t)
   for _, carta := range c.cartasRestantes {
     if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado) {
-      pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta, nroHeuristica, t)
+			c.cartasJugablesEnTurno[t][carta.Id] = carta
+			pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta, nroHeuristica, t)
       if pesoCarta > pesoMaximo {
         pesoMaximo = pesoCarta
         cartaJugada = carta
@@ -200,7 +225,7 @@ func (c *Contexto) calcularPuntos() {
 	puntosComerciales := puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
 	c.PuntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
-	
+
 	c.DetalleDePuntos = fmt.Sprintf("\nPuntos Militares: %d \nPuntos civiles: %d\nPuntos monedas: %d\nPuntos cientificos totales: %d\nPuntos cientificos iguales: %d\nPuntos cientificos diferentes: %d\nCantidad de cartas de tipo escritura: %d\nCantidad de cartas de tipo rueda: %d\nCantidad de cartas de tipo geometria: %d\nPuntos comerciales: %d\n", puntosMilitares, puntosCiviles, puntosMonedas, puntosCientificos, puntosCientificosIguales, puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES, cantidadEscritura, cantidadRueda, cantidadGeometria, puntosComerciales)
 	/*fmt.Println("### PUNTOS ###")
 	fmt.Println("Puntos militares:", puntosMilitares)
@@ -242,7 +267,8 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
   manufacturasJugadas := 0
   comercialesJugadas := 0
   for _, unaCarta := range c.CartasJugadas {
-    switch unaCarta.Tipo {
+		if unaCarta.Id != NULL {
+	  switch unaCarta.Tipo {
       case MATERIA_PRIMA:
         materiasPrimasJugadas++
       case MANUFACTURA:
@@ -250,15 +276,16 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
       case COMERCIAL:
         comercialesJugadas++
     }
+	}
   }
   if cartaJugada.Id == VINEYARD || cartaJugada.Id == HAVEN {
-    c.recursosDisponibles[MONEDA] = materiasPrimasJugadas
+    c.recursosDisponibles[MONEDA] += materiasPrimasJugadas
   }
   if cartaJugada.Id == BAZAR || cartaJugada.Id == CHAMBER {
-    c.recursosDisponibles[MONEDA] = 2 * manufacturasJugadas
+    c.recursosDisponibles[MONEDA] += 2 * manufacturasJugadas
   }
   if cartaJugada.Id == LIGHTHOUSE {
-    c.recursosDisponibles[MONEDA] = comercialesJugadas
+    c.recursosDisponibles[MONEDA] += comercialesJugadas
   }
 
   c.recursosDisponibles[MONEDA] -= cartaJugada.monedasNecesarias
@@ -269,16 +296,78 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
 }
 
 //Realiza la heurística de construcción
-func (c *Contexto) ComenzarSimulacion(nroHeuristica int) {
-  for t:= 0; t < TURNOS;t++ {
+func (c *Contexto) ComenzarSimulacion(nroHeuristica, turno int) {
+  for t := turno; t < TURNOS;t++ {
     cartaJugada := c.SimularTurno(t, c.CartasJugadas, nroHeuristica)
     c.CartasJugadas[t] = cartaJugada
     c.jugarCarta(cartaJugada)
     //fmt.Println("Monedas turno", t,":", c.recursosDisponibles[MONEDA])
   }
   c.calcularPuntos()
+}
 
+func (c *Contexto) RejugarUltimaCarta(turnoCambio, cartaCambio int) {
+	c.deshacerJugadasHasta(turnoCambio)
+	c.CartasJugadas[turnoCambio] = c.cartasJugablesEnTurno[turnoCambio][cartaCambio]
+	c.jugarCarta(c.CartasJugadas[turnoCambio])
+}
 
+func (c *Contexto) deshacerJugadasHasta(turnoCambio int) {
+	for t := TURNOS -1 ; t >= turnoCambio; t-- {
+		c.deshacerJugadaCarta(c.CartasJugadas[t])
+	}
+}
+
+func (c *Contexto) deshacerJugadaCarta(cartaJugada Carta) {
+	c.cartasRestantes[cartaJugada.Id].Id = cartaJugada.Id
+  if cartaJugada.Id == CARAVANSERY {
+    c.comodinMateriaPrimaJugado = false
+  }
+  if cartaJugada.Id == FORUM {
+    c.comodinManufacturaJugado = false
+  }
+  if cartaJugada.Id == MARKETPLACE {
+    c.precioRecursos[CERAMICA] = PRECIO_INICIAL_RECURSO
+    c.precioRecursos[TELA] = PRECIO_INICIAL_RECURSO
+    c.precioRecursos[PAPIRO] = PRECIO_INICIAL_RECURSO
+  }
+  if cartaJugada.Id == WEST_TRADING_POST {
+    c.precioRecursos[LADRILLO] = PRECIO_INICIAL_RECURSO
+    c.precioRecursos[CEMENTO] = PRECIO_INICIAL_RECURSO
+    c.precioRecursos[ORO] = PRECIO_INICIAL_RECURSO
+    c.precioRecursos[MADERA] = PRECIO_INICIAL_RECURSO
+  }
+  //ESTO se puede optimizar para que solo se llama
+  materiasPrimasJugadas := 0
+  manufacturasJugadas := 0
+  comercialesJugadas := 0
+  for _, unaCarta := range c.CartasJugadas {
+		if unaCarta.Id != NULL {
+		switch unaCarta.Tipo {
+      case MATERIA_PRIMA:
+        materiasPrimasJugadas++
+      case MANUFACTURA:
+        manufacturasJugadas++
+      case COMERCIAL:
+        comercialesJugadas++
+    }
+	}
+  }
+  if cartaJugada.Id == VINEYARD || cartaJugada.Id == HAVEN {
+    c.recursosDisponibles[MONEDA] -= materiasPrimasJugadas
+  }
+  if cartaJugada.Id == BAZAR || cartaJugada.Id == CHAMBER {
+    c.recursosDisponibles[MONEDA] -= 2 * manufacturasJugadas
+  }
+  if cartaJugada.Id == LIGHTHOUSE {
+    c.recursosDisponibles[MONEDA] -= comercialesJugadas
+  }
+
+  c.recursosDisponibles[MONEDA] += cartaJugada.monedasNecesarias
+  recursos := [CANTIDAD_RECURSOS]int{LADRILLO, CEMENTO, ORO, MADERA, CERAMICA, TELA, PAPIRO, MONEDA}
+  for r, _ := range recursos {
+    c.recursosDisponibles[r] -= cartaJugada.Produce[r]
+  }
 }
 
 //devuelve el nombre de la heuristica de la cual se pasa el nro por parametro
@@ -343,7 +432,7 @@ func (c Contexto) MostrarResultados(cartasJugadas [TURNOS]Carta, detalleDePuntos
 	nombreTipo := ""
 	for i, e := range cartasJugadas {
 		nombreTipo = c.obtenerNombreTipo(e.Tipo)
-		fmt.Println("Carta jugada en turno", i+1, ":",e.Nombre,"-",nombreTipo)
+		fmt.Println("Carta jugada en turno", i+1, ":",e.Nombre,"-",nombreTipo,"-", e.Id)
 	}
 	fmt.Println(detalleDePuntos)
 	fmt.Println("Puntos obtenidos:", puntosTotales)
