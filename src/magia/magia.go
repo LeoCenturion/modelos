@@ -63,7 +63,8 @@ func main(){
   }
   cambioEnTurno := 0
   cartaCambiada := 0
-  for i:= 0; i < 100; i++ {
+  var cartasJugadasFinales [juego.TURNOS]juego.Carta
+  for i:= 0; i < 1; i++ {
       s2 := rand.NewSource(time.Now().UnixNano())
       r2 := rand.New(s2)
       turnoCambio := r2.Intn(juego.TURNOS-1) + 1
@@ -82,7 +83,7 @@ func main(){
       if mejoresPuntos <= it.PuntosTotales {
     		mejoresPuntos = it.PuntosTotales
     		//cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno = it.GetEstado()
-        cartasJugadas = it.CartasJugadas
+        cartasJugadasFinales = it.CartasJugadas
         detalleDePuntos = it.DetalleDePuntos
     		nombreMejorHeuristica = nombreHeuristica
         cartaCambiada = cartaCambio
@@ -90,6 +91,6 @@ func main(){
     }
   }
   fmt.Println("\nCalculado con heurísitca:", nombreMejorHeuristica, " se obtienen ", mejoresPuntos, " puntos.")
-  c.MostrarResultados(cartasJugadas, detalleDePuntos, mejoresPuntos)
+  c.MostrarResultados(cartasJugadasFinales, detalleDePuntos, mejoresPuntos)
   fmt.Println("\n Se cambio de turno en ", cambioEnTurno, " y se jugo la carta", cartaCambiada)
 }
