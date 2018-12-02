@@ -63,7 +63,7 @@ func main(){
   }
   cambioEnTurno := 0
   cartaCambiada := 0
-  for i:= 0; i < 10; i++ {
+  for i:= 0; i < 1000; i++ {
       s2 := rand.NewSource(time.Now().UnixNano())
       r2 := rand.New(s2)
       turnoCambio := r2.Intn(juego.TURNOS)

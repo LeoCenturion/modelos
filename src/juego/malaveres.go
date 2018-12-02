@@ -121,19 +121,23 @@ func (c Contexto) eraEnTurno(t int) (era int){
 
 //Obtiene la carta que se debería jugar en el turno t, dado el estado de cartasJugadas.
 func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta, nroHeuristica int) (cartaJugada Carta){
-  pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
-  eraActual := c.eraEnTurno(t)
-  for _, carta := range c.cartasRestantes {
-    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado) {
+	pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
+	eraActual := c.eraEnTurno(t)
+	for _, carta := range c.cartasRestantes {
+		isIdNull := carta.Id == NULL
+		sePuedeJugar := carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado)
+		fmt.Println("se puede jugar", sePuedeJugar)
+		fmt.Println("is null", isIdNull)
+		if  !isIdNull && sePuedeJugar  {
 			c.cartasJugablesEnTurno[t][carta.Id] = carta
 			pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta, nroHeuristica, t)
-      if pesoCarta > pesoMaximo {
-        pesoMaximo = pesoCarta
-        cartaJugada = carta
-      }
-    }
-  }
-  return
+			if pesoCarta > pesoMaximo {
+				pesoMaximo = pesoCarta
+				cartaJugada = carta
+			}
+		}
+	}
+	return
 
 }
 
@@ -298,7 +302,9 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
 //Realiza la heurística de construcción
 func (c *Contexto) ComenzarSimulacion(nroHeuristica, turno int) {
   for t := turno; t < TURNOS;t++ {
-    cartaJugada := c.SimularTurno(t, c.CartasJugadas, nroHeuristica)
+	  cartaJugada := c.SimularTurno(t, c.CartasJugadas, nroHeuristica)
+	  if cartaJugada.Id == NULL  {  log.Fatal("se pudre todo" )}
+//	  fmt.Println("Carta jugada", cartaJugada)
     c.CartasJugadas[t] = cartaJugada
     c.jugarCarta(cartaJugada)
     //fmt.Println("Monedas turno", t,":", c.recursosDisponibles[MONEDA])
