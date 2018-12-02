@@ -27,9 +27,12 @@ func (c *Contexto) Resetear(){
 	}
 
 	for i, _ := range c.precioRecursos {
-		c.precioRecursos[i] = PRECIO_INICIAL_RECURSO
+		c.precioRecursos[i] = 1
 		c.recursosDisponibles[i] = 0
 	}
+	c.precioRecursos[PAPIRO] = 2
+	c.precioRecursos[TELA] = 2
+	c.precioRecursos[CERAMICA] = 2
 
 	c.PuntosTotales = 0
 	c.comodinMateriaPrimaJugado = false
@@ -200,7 +203,7 @@ func (c *Contexto) calcularPuntos() {
 	puntosComerciales := puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
 	c.PuntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
-	
+
 	c.DetalleDePuntos = fmt.Sprintf("\nPuntos Militares: %d \nPuntos civiles: %d\nPuntos monedas: %d\nPuntos cientificos totales: %d\nPuntos cientificos iguales: %d\nPuntos cientificos diferentes: %d\nCantidad de cartas de tipo escritura: %d\nCantidad de cartas de tipo rueda: %d\nCantidad de cartas de tipo geometria: %d\nPuntos comerciales: %d\n", puntosMilitares, puntosCiviles, puntosMonedas, puntosCientificos, puntosCientificosIguales, puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES, cantidadEscritura, cantidadRueda, cantidadGeometria, puntosComerciales)
 	/*fmt.Println("### PUNTOS ###")
 	fmt.Println("Puntos militares:", puntosMilitares)

@@ -11,12 +11,11 @@ func main(){
   //c.CargarCartas("cartas.csv")
   //c.MostrarCartasDisponibles()
 
-  heuristicas := []int{juego.HEURISTICA_ID, juego.HEUTISTICA_PUNTOS, juego.HEURISTICA_PROMEDIO_DE_PRODUCE, 
-  	juego.HEURISTICA_PUNTOS_DE_CARTA_QUE_LIBERA, juego.HEURISTICA_PROMEDIO_PRODUCE_DE_CARTA_QUE_LIBERA, 
+  heuristicas := []int{juego.HEURISTICA_ID, juego.HEUTISTICA_PUNTOS, juego.HEURISTICA_PROMEDIO_DE_PRODUCE,
+  	juego.HEURISTICA_PUNTOS_DE_CARTA_QUE_LIBERA, juego.HEURISTICA_PROMEDIO_PRODUCE_DE_CARTA_QUE_LIBERA,
   	juego.ORNITORRINCO_MAXIMO, juego.CONDOR_ALPINO, juego.SPAGHETTI, juego.CHOCOLATE, juego.KOALA_CHICLOSO_PAPOTEADO,
     juego.CHOCOLATE_CON_PAPAS_FRITAS}
 
-  var mejorHeuristica int
   var mejoresPuntos int
   var cartasJugadas [juego.TURNOS]juego.Carta
   var detalleDePuntos string
@@ -33,7 +32,6 @@ func main(){
 	fmt.Println("Calculado con heurísitca:", nombreHeuristica, " se obtienen ", c.PuntosTotales, " puntos.")
 	if mejoresPuntos <= c.PuntosTotales{
 		mejoresPuntos = c.PuntosTotales
-		mejorHeuristica = heuristica
 		cartasJugadas = c.CartasJugadas
 		detalleDePuntos = c.DetalleDePuntos
 		nombreMejorHeuristica = nombreHeuristica
