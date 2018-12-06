@@ -121,24 +121,19 @@ func (c Contexto) eraEnTurno(t int) (era int){
 
 //Obtiene la carta que se debería jugar en el turno t, dado el estado de cartasJugadas.
 func (c *Contexto) SimularTurno(t int, cartasJugadas [TURNOS]Carta, nroHeuristica int) (cartaJugada Carta){
-	pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
-	eraActual := c.eraEnTurno(t)
-	for _, carta := range c.cartasRestantes {
-		isIdNull := carta.Id == NULL
-		sePuedeJugar := carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado)
-		fmt.Println("se puede jugar", sePuedeJugar)
-		fmt.Println("is null", isIdNull)
-		if  !isIdNull && sePuedeJugar  {
+  pesoMaximo := float32(-1) //TODO: Esto se puede hacer acumulativo entre turnos y tener memoria
+  eraActual := c.eraEnTurno(t)
+  for _, carta := range c.cartasRestantes {
+    if carta.Id != NULL && carta.SePuedeJugar(c.recursosDisponibles, cartasJugadas, eraActual, c.precioRecursos, c.comodinMateriaPrimaJugado, c.comodinManufacturaJugado) {
 			c.cartasJugablesEnTurno[t][carta.Id] = carta
 			pesoCarta := c.calcularPeso(cartasJugadas, c.cartasRestantes, carta, nroHeuristica, t)
-			if pesoCarta > pesoMaximo {
-				pesoMaximo = pesoCarta
-				cartaJugada = carta
-			}
-		}
-	}
-	return
-
+      if pesoCarta > pesoMaximo {
+        pesoMaximo = pesoCarta
+        cartaJugada = carta
+      }
+    }
+  }
+  return
 }
 
 //Calcula los puntos segun todas las cartasJugadas
@@ -224,26 +219,15 @@ func (c *Contexto) calcularPuntos() {
 	}
 	puntosCientificos := puntosCientificosIguales + puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES
 
-  	puntosMonedas := c.recursosDisponibles[MONEDA]/3
+  puntosMonedas := c.recursosDisponibles[MONEDA]/3
 
 	puntosComerciales := puntosPorMateriasPrimasAlFinal + puntosPorManufacturasAlFinal + puntosPorComercialesAlFinal
 
 	c.PuntosTotales=puntosMilitares+puntosCiviles+puntosMonedas+puntosCientificos + puntosComerciales
 
 	c.DetalleDePuntos = fmt.Sprintf("\nPuntos Militares: %d \nPuntos civiles: %d\nPuntos monedas: %d\nPuntos cientificos totales: %d\nPuntos cientificos iguales: %d\nPuntos cientificos diferentes: %d\nCantidad de cartas de tipo escritura: %d\nCantidad de cartas de tipo rueda: %d\nCantidad de cartas de tipo geometria: %d\nPuntos comerciales: %d\n", puntosMilitares, puntosCiviles, puntosMonedas, puntosCientificos, puntosCientificosIguales, puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES, cantidadEscritura, cantidadRueda, cantidadGeometria, puntosComerciales)
-	/*fmt.Println("### PUNTOS ###")
-	fmt.Println("Puntos militares:", puntosMilitares)
-	fmt.Println("Puntos civiles:", puntosCiviles)
-	fmt.Println("Puntos Monedas:", puntosMonedas)
-	fmt.Println("Puntos cientificos totales:", puntosCientificos)
-	fmt.Println("Puntos cientificos iguales:", puntosCientificosIguales)
-	fmt.Println("Puntos cientificos diferentes:", puntosCientificosDiferentes*PUNTOS_CIENTIFICOS_DIFERENTES)
-	fmt.Println("Cantidad de cartas de tipo escritura:", cantidadEscritura)
-	fmt.Println("Cantidad de cartas de tipo rueda:", cantidadRueda)
-	fmt.Println("Cantidad de cartas de tipo geometria:", cantidadGeometria)
-	fmt.Println("Puntos comerciales:", puntosComerciales)*/
-}
 
+}
 
 func (c *Contexto) jugarCarta(cartaJugada Carta) {
   if cartaJugada.Id != NO_HACER_NADA {
@@ -302,9 +286,7 @@ func (c *Contexto) jugarCarta(cartaJugada Carta) {
 //Realiza la heurística de construcción
 func (c *Contexto) ComenzarSimulacion(nroHeuristica, turno int) {
   for t := turno; t < TURNOS;t++ {
-	  cartaJugada := c.SimularTurno(t, c.CartasJugadas, nroHeuristica)
-	  if cartaJugada.Id == NULL  {  log.Fatal("se pudre todo" )}
-//	  fmt.Println("Carta jugada", cartaJugada)
+    cartaJugada := c.SimularTurno(t, c.CartasJugadas, nroHeuristica)
     c.CartasJugadas[t] = cartaJugada
     c.jugarCarta(cartaJugada)
     //fmt.Println("Monedas turno", t,":", c.recursosDisponibles[MONEDA])
@@ -321,6 +303,7 @@ func (c *Contexto) RejugarUltimaCarta(turnoCambio, cartaCambio int) {
 func (c *Contexto) deshacerJugadasHasta(turnoCambio int) {
 	for t := TURNOS -1 ; t >= turnoCambio; t-- {
 		c.deshacerJugadaCarta(c.CartasJugadas[t])
+		c.CartasJugadas[t].Id = NULL
 	}
 }
 
@@ -359,12 +342,15 @@ func (c *Contexto) deshacerJugadaCarta(cartaJugada Carta) {
     }
 	}
   }
-  if cartaJugada.Id == VINEYARD || cartaJugada.Id == HAVEN {
+
+	if cartaJugada.Id == VINEYARD || cartaJugada.Id == HAVEN {
     c.recursosDisponibles[MONEDA] -= materiasPrimasJugadas
   }
+
   if cartaJugada.Id == BAZAR || cartaJugada.Id == CHAMBER {
     c.recursosDisponibles[MONEDA] -= 2 * manufacturasJugadas
   }
+
   if cartaJugada.Id == LIGHTHOUSE {
     c.recursosDisponibles[MONEDA] -= comercialesJugadas
   }

@@ -59,38 +59,55 @@ func main(){
         cartas += strconv.Itoa(cartasJugablesEnTurno[i][j].Id) + ","
       }
     }
-    fmt.Println("cartas jugables en turno t:", cartas)
+    fmt.Println("cartas jugables en turno",i+1,":", cartas)
   }
+  var cartasJugadasFinales [juego.TURNOS]juego.Carta
   cambioEnTurno := 0
   cartaCambiada := 0
-  var cartasJugadasFinales [juego.TURNOS]juego.Carta
-  for i:= 0; i < 1; i++ {
-      s2 := rand.NewSource(time.Now().UnixNano())
-      r2 := rand.New(s2)
-      turnoCambio := r2.Intn(juego.TURNOS-1) + 1
-      turnoAnteriorCambio := turnoCambio -1
-      if turnoCambio == 0 {
-        turnoAnteriorCambio = 0
-      }
-      cartaCambio := r2.Intn(juego.INDICE_MAXIMO_CARTA) //TODO : ESTO SE PUEDE OPTIMIZAR BASTANTE
-      for ; cartasJugablesEnTurno[turnoAnteriorCambio][cartaCambio].Id == juego.NULL ; {
-        cartaCambio = r2.Intn(juego.INDICE_MAXIMO_CARTA)
-      }
-      it := juego.Contexto{}
-      it.Init(cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno)
-      it.RejugarUltimaCarta(turnoAnteriorCambio, cartaCambio)
-      it.ComenzarSimulacion(mejorHeuristica, turnoCambio)
+  var cjtMax [juego.TURNOS][juego.INDICE_MAXIMO_CARTA]juego.Carta
+  for i:= 0; i < 100; i++ {
+      it, turnoCambio, cartaCambio := generarRuidoEnSolucion(mejorHeuristica, cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno)
+      _,_,_,_,_,_,_,cjt := it.GetEstado()
       if mejoresPuntos <= it.PuntosTotales {
     		mejoresPuntos = it.PuntosTotales
-    		//cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno = it.GetEstado()
+        cjtMax = cjt
+        //cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno = it.GetEstado()
         cartasJugadasFinales = it.CartasJugadas
         detalleDePuntos = it.DetalleDePuntos
-    		nombreMejorHeuristica = nombreHeuristica
-        cartaCambiada = cartaCambio
         cambioEnTurno = turnoCambio
+        cartaCambiada = cartaCambio
     }
   }
   fmt.Println("\nCalculado con heurísitca:", nombreMejorHeuristica, " se obtienen ", mejoresPuntos, " puntos.")
   c.MostrarResultados(cartasJugadasFinales, detalleDePuntos, mejoresPuntos)
   fmt.Println("\n Se cambio de turno en ", cambioEnTurno, " y se jugo la carta", cartaCambiada)
+
+    for i := 0; i< 18 ; i ++ {
+      cartas := ""
+      for j := 0; j < juego.INDICE_MAXIMO_CARTA; j++ {
+        if cjtMax[i][j].Id != juego.NULL {
+          cartas += strconv.Itoa(cjtMax[i][j].Id) + ","
+        }
+      }
+      fmt.Println("cartas jugables en turno",i+1,":", cartas)
+    }
+}
+
+func generarRuidoEnSolucion(mejorHeuristica int, cartasJugadas [juego.TURNOS]juego.Carta, cartasDisponibles, cartasRestantes[juego.INDICE_MAXIMO_CARTA]juego.Carta, recursosDisponibles, precioRecursos [juego.CANTIDAD_RECURSOS]int,comodinManufacturaJugado, comodinMateriaPrimaJugado bool, cartasJugablesEnTurno [juego.TURNOS][juego.INDICE_MAXIMO_CARTA]juego.Carta) (juego.Contexto, int, int) {
+  s2 := rand.NewSource(time.Now().UnixNano())
+  r2 := rand.New(s2)
+  turnoCambio := r2.Intn(juego.TURNOS-1) + 1
+  turnoAnteriorCambio := turnoCambio -1
+  if turnoCambio == 0 {
+    turnoAnteriorCambio = 0
+  }
+  cartaCambio := r2.Intn(juego.INDICE_MAXIMO_CARTA) //TODO : ESTO SE PUEDE OPTIMIZAR BASTANTE
+  for ; cartasJugablesEnTurno[turnoAnteriorCambio][cartaCambio].Id == juego.NULL ; {
+    cartaCambio = r2.Intn(juego.INDICE_MAXIMO_CARTA)
+  }
+  it := juego.Contexto{}
+  it.Init(cartasJugadas, cartasRestantes, cartasDisponibles, recursosDisponibles, precioRecursos, comodinManufacturaJugado, comodinMateriaPrimaJugado, cartasJugablesEnTurno)
+  it.RejugarUltimaCarta(turnoAnteriorCambio, cartaCambio)
+  it.ComenzarSimulacion(mejorHeuristica, turnoCambio)
+  return it, turnoCambio, cartaCambio
 }
